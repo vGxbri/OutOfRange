@@ -11,7 +11,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - Suelo
   - 
   - 
   - 
@@ -40,4 +40,19 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Cielo
+    uniqueID: 3616475047
+    locked: 0
+  - name: Fondo 1
+    uniqueID: 2550550709
+    locked: 0
+  - name: Fondo 2
+    uniqueID: 4279208715
+    locked: 0
+  - name: Plataformas
+    uniqueID: 1280165923
+    locked: 0
+  - name: Jugador
+    uniqueID: 2510260257
     locked: 0
