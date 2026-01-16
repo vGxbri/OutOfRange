@@ -21,6 +21,8 @@ public class MovimientoJugador : MonoBehaviour
     private bool tocandoSuelo;
     private float tiempoCoyote = 0.15f;
     private float contadorCoyote;
+    private bool estaMuerto = false;
+    private float tiempoPresionado;
 
     void Awake()
     {
@@ -32,6 +34,8 @@ public class MovimientoJugador : MonoBehaviour
     // Se activa al pulsar W (Configurado en el Player Input)
     public void AlSaltar(InputAction.CallbackContext context)
     {
+        if (estaMuerto) return;
+
         // Solo saltamos en el momento exacto de pulsar (performed)
         // y si el contador de Coyote aún es mayor a cero
         if (context.performed && contadorCoyote > 0)
@@ -54,6 +58,8 @@ public class MovimientoJugador : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (estaMuerto) return;
+
         // 1. ACTUALIZAR DETECCIÓN DE SUELO
         // Comprobamos si el círculo toca algo en la capa Suelo
         tocandoSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccion, capaSuelo);
@@ -104,17 +110,56 @@ public class MovimientoJugador : MonoBehaviour
         }
     }
 
-    // Esta función se conecta en el Player Input
+    [Header("Ajustes de Combate")]
+    public float tiempoCargaNecesario = 0.5f; // Tiempo en segundos para que sea ataque pesado
+
     public void AlAtacar(InputAction.CallbackContext context)
     {
-        // Solo disparamos el ataque en el momento de pulsar (performed)
-        if (context.performed)
-        {
-            // Activamos el Trigger en el Animator
-            animator.SetTrigger("Atacar");
+        if (estaMuerto) return;
 
-            // De momento solo ponemos un mensaje en consola para saber que funciona
-            Debug.Log("¡Ataque!");
+        // 1. Justo cuando pones el dedo en el espacio
+        if (context.started)
+        {
+            tiempoPresionado = Time.time; // Guardamos el segundo exacto de inicio
+            Debug.Log("Cargando ataque...");
+
+            // OPCIONAL: Cambiar color para saber que está cargando
+            spriteRenderer.color = Color.yellow;
         }
+
+        // 2. Justo cuando quitas el dedo del espacio
+        if (context.canceled)
+        {
+            // Calculamos la resta: tiempo de ahora menos tiempo de inicio
+            float duracionFinal = Time.time - tiempoPresionado;
+
+            if (duracionFinal >= tiempoCargaNecesario)
+            {
+                // ATAQUE PESADO
+                animator.SetTrigger("Atacar2");
+            }
+            else
+            {
+                // ATAQUE NORMAL
+                animator.SetTrigger("Atacar");
+            }
+
+            // Devolvemos el color a la normalidad (Blanco)
+            spriteRenderer.color = Color.white;
+        }
+    }
+
+    public void Morir()
+    {
+        if (estaMuerto) return; // Si ya está muerto, no hace nada
+
+        estaMuerto = true;
+
+        // Disparamos la animación
+        animator.SetTrigger("Morir");
+
+        // Bloqueamos las físicas para que no se mueva el cadáver
+        rb.velocity = Vector2.zero;
+        // rb.simulated = false; // Opcional: si quieres que atraviese cosas al morir
     }
 }
