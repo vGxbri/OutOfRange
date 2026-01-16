@@ -1,16 +1,21 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class MovimientoJugador : MonoBehaviour
 {
     [Header("Configuración de Movimiento")]
-    public float velocidad = 1.5f;
+    public float velocidad = 1.2f;
     public float fuerzaSalto = 4.2f;
 
     [Header("Detección de Suelo")]
     public Transform detectorSuelo;
-    public float radioDeteccion = 0.3f;
+    public float radioDeteccion = 0.11f;
     public LayerMask capaSuelo;
+
+    [Header("Ajustes de Combate")]
+    public float tiempoCargaNecesario = 0.3f;
+    public float tiempoBloqueoHit = 0.2f;
 
     private Rigidbody2D rb;
     private Animator animator;
@@ -23,6 +28,8 @@ public class MovimientoJugador : MonoBehaviour
     private float contadorCoyote;
     private bool estaMuerto = false;
     private float tiempoPresionado;
+    private bool bloqueadoPorAtaque = false;
+    private bool bloqueadoPorHit = false;
 
     void Awake()
     {
@@ -31,40 +38,22 @@ public class MovimientoJugador : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // Se activa al pulsar W (Configurado en el Player Input)
-    public void AlSaltar(InputAction.CallbackContext context)
-    {
-        if (estaMuerto) return;
-
-        // Solo saltamos en el momento exacto de pulsar (performed)
-        // y si el contador de Coyote aún es mayor a cero
-        if (context.performed && contadorCoyote > 0)
-        {
-            // Aplicamos fuerza vertical pura (Salto constante)
-            rb.velocity = new Vector2(rb.velocity.x, fuerzaSalto);
-
-            // Disparamos la animación
-            animator.SetTrigger("Saltar");
-
-            // Gastamos el coyote time para no saltar dos veces
-            contadorCoyote = 0;
-        }
-    }
-
-    public void AlMover(InputAction.CallbackContext context)
-    {
-        inputMovimiento = context.ReadValue<Vector2>();
-    }
-
     void FixedUpdate()
     {
-        if (estaMuerto) return;
+        // 1. GESTIÓN DE BLOQUEOS
+        // Si estamos muertos, atacando o heridos, frenamos y salimos del FixedUpdate
+        if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            // Actualizamos velocidad vertical para que Jump/Fall funcionen si nos pegan en el aire
+            animator.SetFloat("VelocidadVertical", rb.velocity.y);
+            return;
+        }
 
-        // 1. ACTUALIZAR DETECCIÓN DE SUELO
-        // Comprobamos si el círculo toca algo en la capa Suelo
+        // 2. ACTUALIZAR DETECCIÓN DE SUELO
         tocandoSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccion, capaSuelo);
 
-        // 2. LÓGICA DE COYOTE TIME
+        // 3. LÓGICA DE COYOTE TIME
         if (tocandoSuelo)
         {
             contadorCoyote = tiempoCoyote;
@@ -74,33 +63,107 @@ public class MovimientoJugador : MonoBehaviour
             contadorCoyote -= Time.fixedDeltaTime;
         }
 
-        // 3. GRAVEDAD PRO (Cae más rápido para que no sea "lunar")
-        if (rb.velocity.y < 0)
-        {
-            rb.gravityScale = 1f;
-        }
-        else
-        {
-            rb.gravityScale = 2f;
-        }
+        // 4. GRAVEDAD PRO
+        if (rb.velocity.y < 0) rb.gravityScale = 2f; // Cae más pesado
+        else rb.gravityScale = 1f;
 
-        // 4. MOVIMIENTO HORIZONTAL
+        // 5. MOVIMIENTO HORIZONTAL
         rb.velocity = new Vector2(inputMovimiento.x * velocidad, rb.velocity.y);
 
-        // 5. ACTUALIZAR ANIMATOR
+        // 6. ACTUALIZAR ANIMATOR
         animator.SetBool("enSuelo", tocandoSuelo);
         animator.SetFloat("Velocidad", Mathf.Abs(inputMovimiento.x));
+        animator.SetFloat("VelocidadVertical", rb.velocity.y);
 
-        // 6. GIRAR SPRITE
+        // 7. GIRAR SPRITE
         if (inputMovimiento.x > 0) spriteRenderer.flipX = false;
         else if (inputMovimiento.x < 0) spriteRenderer.flipX = true;
-
-        // ENVIAR VELOCIDAD VERTICAL AL ANIMATOR
-        // rb.velocity.y será positivo al subir y negativo al bajar
-        animator.SetFloat("VelocidadVertical", rb.velocity.y);
     }
 
-    // Dibuja el círculo en la escena para ayudarte a colocarlo
+    // --- ENTRADAS DE CONTROL (INPUT SYSTEM) ---
+
+    public void AlMover(InputAction.CallbackContext context)
+    {
+        inputMovimiento = context.ReadValue<Vector2>();
+    }
+
+    public void AlSaltar(InputAction.CallbackContext context)
+    {
+        if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit) return;
+
+        if (context.performed && contadorCoyote > 0)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, fuerzaSalto);
+            animator.SetTrigger("Saltar");
+            contadorCoyote = 0;
+        }
+    }
+
+    public void AlAtacar(InputAction.CallbackContext context)
+    {
+        if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit) return;
+
+        if (context.started)
+        {
+            tiempoPresionado = Time.time;
+            spriteRenderer.color = Color.yellow; // Feedback de carga
+        }
+
+        if (context.canceled)
+        {
+            float duracionFinal = Time.time - tiempoPresionado;
+            spriteRenderer.color = Color.white;
+
+            if (duracionFinal >= tiempoCargaNecesario)
+            {
+                StartCoroutine(SecuenciaAtaquePesado());
+            }
+            else
+            {
+                animator.SetTrigger("Atacar");
+            }
+        }
+    }
+
+    // --- SECUENCIAS (CORRUTINAS) ---
+
+    IEnumerator SecuenciaAtaquePesado()
+    {
+        bloqueadoPorAtaque = true;
+        rb.velocity = new Vector2(0, rb.velocity.y);
+        animator.SetTrigger("Atacar2");
+
+        yield return new WaitForSeconds(0.6f); // Duración animación
+        yield return new WaitForSeconds(0.3f); // Recuperación extra
+
+        bloqueadoPorAtaque = false;
+    }
+
+    IEnumerator SecuenciaHit()
+    {
+        bloqueadoPorHit = true;
+        animator.SetTrigger("Recibir_Hit"); // Asegúrate de que el Trigger se llame "Hit" en el Animator
+        yield return new WaitForSeconds(tiempoBloqueoHit);
+
+        bloqueadoPorHit = false;
+    }
+
+    // --- FUNCIONES PÚBLICAS ---
+
+    public void RecibirHit()
+    {
+        if (estaMuerto || bloqueadoPorHit) return;
+        StartCoroutine(SecuenciaHit());
+    }
+
+    public void Morir()
+    {
+        if (estaMuerto) return;
+        estaMuerto = true;
+        animator.SetTrigger("Morir");
+        rb.velocity = Vector2.zero;
+    }
+
     private void OnDrawGizmos()
     {
         if (detectorSuelo != null)
@@ -108,58 +171,5 @@ public class MovimientoJugador : MonoBehaviour
             Gizmos.color = tocandoSuelo ? Color.green : Color.red;
             Gizmos.DrawWireSphere(detectorSuelo.position, radioDeteccion);
         }
-    }
-
-    [Header("Ajustes de Combate")]
-    public float tiempoCargaNecesario = 0.5f; // Tiempo en segundos para que sea ataque pesado
-
-    public void AlAtacar(InputAction.CallbackContext context)
-    {
-        if (estaMuerto) return;
-
-        // 1. Justo cuando pones el dedo en el espacio
-        if (context.started)
-        {
-            tiempoPresionado = Time.time; // Guardamos el segundo exacto de inicio
-            Debug.Log("Cargando ataque...");
-
-            // OPCIONAL: Cambiar color para saber que está cargando
-            spriteRenderer.color = Color.yellow;
-        }
-
-        // 2. Justo cuando quitas el dedo del espacio
-        if (context.canceled)
-        {
-            // Calculamos la resta: tiempo de ahora menos tiempo de inicio
-            float duracionFinal = Time.time - tiempoPresionado;
-
-            if (duracionFinal >= tiempoCargaNecesario)
-            {
-                // ATAQUE PESADO
-                animator.SetTrigger("Atacar2");
-            }
-            else
-            {
-                // ATAQUE NORMAL
-                animator.SetTrigger("Atacar");
-            }
-
-            // Devolvemos el color a la normalidad (Blanco)
-            spriteRenderer.color = Color.white;
-        }
-    }
-
-    public void Morir()
-    {
-        if (estaMuerto) return; // Si ya está muerto, no hace nada
-
-        estaMuerto = true;
-
-        // Disparamos la animación
-        animator.SetTrigger("Morir");
-
-        // Bloqueamos las físicas para que no se mueva el cadáver
-        rb.velocity = Vector2.zero;
-        // rb.simulated = false; // Opcional: si quieres que atraviese cosas al morir
     }
 }
