@@ -103,4 +103,18 @@ public class MovimientoJugador : MonoBehaviour
             Gizmos.DrawWireSphere(detectorSuelo.position, radioDeteccion);
         }
     }
+
+    // Esta función se conecta en el Player Input
+    public void AlAtacar(InputAction.CallbackContext context)
+    {
+        // Solo disparamos el ataque en el momento de pulsar (performed)
+        if (context.performed)
+        {
+            // Activamos el Trigger en el Animator
+            animator.SetTrigger("Atacar");
+
+            // De momento solo ponemos un mensaje en consola para saber que funciona
+            Debug.Log("¡Ataque!");
+        }
+    }
 }
