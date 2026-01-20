@@ -31,6 +31,9 @@ public class MovimientoJugador : MonoBehaviour
     private bool bloqueadoPorAtaque = false;
     private bool bloqueadoPorHit = false;
 
+    [Header("Efectos Visuales")]
+    public Animator animatorCarga;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -106,13 +109,22 @@ public class MovimientoJugador : MonoBehaviour
         if (context.started)
         {
             tiempoPresionado = Time.time;
-            spriteRenderer.color = Color.yellow; // Feedback de carga
+
+            // 1. Activamos el efecto visual
+            animatorCarga.SetBool("isCharging", true);
+
+            // 2. Sincronizamos la velocidad: 
+            // Si la animación dura 1s y tu carga es de 0.3s, la velocidad debe ser 1/0.3
+            animatorCarga.speed = 1f / tiempoCargaNecesario;
         }
 
         if (context.canceled)
         {
             float duracionFinal = Time.time - tiempoPresionado;
-            spriteRenderer.color = Color.white;
+
+            // Desactivamos el efecto y reseteamos velocidad
+            animatorCarga.SetBool("isCharging", false);
+            animatorCarga.speed = 1f;
 
             if (duracionFinal >= tiempoCargaNecesario)
             {
@@ -122,6 +134,8 @@ public class MovimientoJugador : MonoBehaviour
             {
                 animator.SetTrigger("Atacar");
             }
+
+            spriteRenderer.color = Color.white;
         }
     }
 

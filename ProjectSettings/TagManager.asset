@@ -53,6 +53,9 @@ TagManager:
   - name: Plataformas
     uniqueID: 1280165923
     locked: 0
+  - name: Animaciones
+    uniqueID: 1935124631
+    locked: 0
   - name: Jugador
     uniqueID: 2510260257
     locked: 0
