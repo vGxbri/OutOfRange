@@ -10,7 +10,7 @@ public class MovimientoJugador : MonoBehaviour
 
     [Header("Detección de Suelo")]
     public Transform detectorSuelo;
-    public float radioDeteccion = 0.11f;
+    public Vector2 tamañoCajaDeteccion = new Vector2(0.2f, 0.05f);
     public LayerMask capaSuelo;
 
     [Header("Ajustes de Combate")]
@@ -53,8 +53,7 @@ public class MovimientoJugador : MonoBehaviour
             return;
         }
 
-        // 2. ACTUALIZAR DETECCIÓN DE SUELO
-        tocandoSuelo = Physics2D.OverlapCircle(detectorSuelo.position, radioDeteccion, capaSuelo);
+        tocandoSuelo = Physics2D.OverlapBox(detectorSuelo.position, tamañoCajaDeteccion, 0f, capaSuelo);
 
         // 3. LÓGICA DE COYOTE TIME
         if (tocandoSuelo)
@@ -183,7 +182,7 @@ public class MovimientoJugador : MonoBehaviour
         if (detectorSuelo != null)
         {
             Gizmos.color = tocandoSuelo ? Color.green : Color.red;
-            Gizmos.DrawWireSphere(detectorSuelo.position, radioDeteccion);
+            Gizmos.DrawWireCube(detectorSuelo.position, tamañoCajaDeteccion);
         }
     }
 }
