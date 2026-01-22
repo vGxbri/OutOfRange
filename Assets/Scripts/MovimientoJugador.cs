@@ -65,9 +65,15 @@ public class MovimientoJugador : MonoBehaviour
             contadorCoyote -= Time.fixedDeltaTime;
         }
 
-        // 4. GRAVEDAD PRO
-        if (rb.velocity.y < 0) rb.gravityScale = 2f; // Cae más pesado
-        else rb.gravityScale = 1f;
+        // 4. GRAVEDAD PRO (Ajustada para un salto más lento)
+        if (rb.velocity.y < 0)
+        {
+            rb.gravityScale = 1.2f; // Antes era 2f (caída más suave)
+        }
+        else
+        {
+            rb.gravityScale = 0.7f; // Antes era 1f (subida más lenta/flotante)
+        }
 
         // 5. MOVIMIENTO HORIZONTAL
         rb.velocity = new Vector2(inputMovimiento.x * velocidad, rb.velocity.y);
