@@ -3,7 +3,7 @@
     "name": "ControlesJugador",
     "maps": [
         {
-            "name": "Player",
+            "name": "Jugador",
             "id": "b0179f66-cc75-4ba8-a794-9ac7757baa00",
             "actions": [
                 {
@@ -52,7 +52,7 @@
                     "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Teclado_Izquierda",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
@@ -63,53 +63,14 @@
                     "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Teclado_Izquierda",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "",
-                    "id": "fda5cfa9-1717-49fb-9ced-afbaabaaa1f1",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Jump",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "2c3b3b70-631b-4b24-8db6-0bfe0734528d",
-                    "path": "<Keyboard>/space",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Attack",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                }
-            ]
-        },
-        {
-            "name": "Player2",
-            "id": "1fa2b81c-fcf5-446c-8c9b-92fa5406892a",
-            "actions": [
-                {
-                    "name": "Move",
-                    "type": "Value",
-                    "id": "aa3469f9-82d8-48bb-a52a-a4ab0709e5c3",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                }
-            ],
-            "bindings": [
-                {
                     "name": "2D Vector",
-                    "id": "45f79097-81e9-47ad-983b-999aea74e52a",
+                    "id": "74cc82b3-ca7b-4142-a1fa-abc3e27a4342",
                     "path": "2DVector",
                     "interactions": "",
                     "processors": "",
@@ -120,28 +81,139 @@
                 },
                 {
                     "name": "left",
-                    "id": "fbc10427-b11d-40c0-ada5-1b29ab004794",
+                    "id": "2a9e072a-1608-4692-89e6-4ae311c78060",
                     "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Teclado_Derecha",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
                 },
                 {
                     "name": "right",
-                    "id": "e4036eb5-16eb-47dc-b450-a954779c7a09",
+                    "id": "498d82b8-ba59-4a9a-9360-99811b6d23d1",
                     "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
+                    "groups": ";Teclado_Derecha",
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "d0bfe02a-9ab9-48c8-af0d-119968b13835",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Mando",
+                    "action": "Move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fda5cfa9-1717-49fb-9ced-afbaabaaa1f1",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Teclado_Izquierda",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "84da5656-baf5-48fb-8ef9-839addb6459b",
+                    "path": "<Keyboard>/upArrow",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Teclado_Derecha",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6bf93000-357f-49d1-af5d-9f9a827df8d0",
+                    "path": "<Gamepad>/buttonSouth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Mando",
+                    "action": "Jump",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2c3b3b70-631b-4b24-8db6-0bfe0734528d",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Teclado_Izquierda",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d2257c48-5148-4bc9-b205-1554d73ee500",
+                    "path": "<Keyboard>/enter",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Teclado_Derecha",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "959017f7-2331-40a6-91c9-e538335e3197",
+                    "path": "<Gamepad>/buttonEast",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Mando",
+                    "action": "Attack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
     ],
-    "controlSchemes": []
+    "controlSchemes": [
+        {
+            "name": "Teclado_Izquierda",
+            "bindingGroup": "Teclado_Izquierda",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Teclado_Derecha",
+            "bindingGroup": "Teclado_Derecha",
+            "devices": [
+                {
+                    "devicePath": "<Keyboard>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        },
+        {
+            "name": "Mando",
+            "bindingGroup": "Mando",
+            "devices": [
+                {
+                    "devicePath": "<Gamepad>",
+                    "isOptional": false,
+                    "isOR": false
+                }
+            ]
+        }
+    ]
 }

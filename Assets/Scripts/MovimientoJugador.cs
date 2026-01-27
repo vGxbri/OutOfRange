@@ -34,6 +34,12 @@ public class MovimientoJugador : MonoBehaviour
     [Header("Efectos Visuales")]
     public Animator animatorCarga;
 
+    [Header("Configuración de Dash")]
+    public bool tieneDash; // Si esto es true, hará dash. Si es false, hará ataque pesado.
+    public float velocidadDash = 10f;
+    public float duracionDash = 0.2f;
+    private bool estaDasheando = false;
+
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -45,10 +51,10 @@ public class MovimientoJugador : MonoBehaviour
     {
         // 1. GESTIÓN DE BLOQUEOS
         // Si estamos muertos, atacando o heridos, frenamos y salimos del FixedUpdate
-        if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit)
+        if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit || estaDasheando)
         {
-            rb.velocity = new Vector2(0, rb.velocity.y);
-            // Actualizamos velocidad vertical para que Jump/Fall funcionen si nos pegan en el aire
+            // Solo frenamos si NO estamos dasheando (porque en el dash queremos que mantenga su velocidad)
+            if (!estaDasheando) rb.velocity = new Vector2(0, rb.velocity.y);
             animator.SetFloat("VelocidadVertical", rb.velocity.y);
             return;
         }
@@ -66,13 +72,10 @@ public class MovimientoJugador : MonoBehaviour
         }
 
         // 4. GRAVEDAD PRO (Ajustada para un salto más lento)
-        if (rb.velocity.y < 0)
+        if (!estaDasheando)
         {
-            rb.gravityScale = 1.2f; // Antes era 2f (caída más suave)
-        }
-        else
-        {
-            rb.gravityScale = 0.7f; // Antes era 1f (subida más lenta/flotante)
+            if (rb.velocity.y < 0) rb.gravityScale = 1.2f;
+            else rb.gravityScale = 0.7f;
         }
 
         // 5. MOVIMIENTO HORIZONTAL
@@ -126,20 +129,24 @@ public class MovimientoJugador : MonoBehaviour
         if (context.canceled)
         {
             float duracionFinal = Time.time - tiempoPresionado;
-
-            // Desactivamos el efecto y reseteamos velocidad
             animatorCarga.SetBool("isCharging", false);
             animatorCarga.speed = 1f;
 
             if (duracionFinal >= tiempoCargaNecesario)
             {
-                StartCoroutine(SecuenciaAtaquePesado());
+                if (tieneDash)
+                {
+                    StartCoroutine(SecuenciaDash());
+                }
+                else
+                {
+                    StartCoroutine(SecuenciaAtaquePesado());
+                }
             }
             else
             {
                 animator.SetTrigger("Atacar");
             }
-
             spriteRenderer.color = Color.white;
         }
     }
@@ -190,5 +197,23 @@ public class MovimientoJugador : MonoBehaviour
             Gizmos.color = tocandoSuelo ? Color.green : Color.red;
             Gizmos.DrawWireCube(detectorSuelo.position, tamañoCajaDeteccion);
         }
+    }
+
+    IEnumerator SecuenciaDash()
+    {
+        estaDasheando = true;
+        float gravedadOriginal = rb.gravityScale;
+        rb.gravityScale = 0;
+
+        float direccion = spriteRenderer.flipX ? -1f : 1f;
+        rb.velocity = new Vector2(direccion * velocidadDash, 0);
+
+        animator.SetTrigger("Dash");
+
+        yield return new WaitForSeconds(duracionDash);
+
+        rb.velocity = Vector2.zero;
+        rb.gravityScale = gravedadOriginal;
+        estaDasheando = false;  
     }
 }
