@@ -39,6 +39,13 @@ public class InicializadorJugador : MonoBehaviour
 
         // 3. POSICIONAMIENTO (Spawn)
         MoverASpawn(indice);
+
+        // --- NUEVA LÓGICA: REGISTRARSE EN LA CÁMARA ---
+        CameraFollow camara = FindObjectOfType<CameraFollow>();
+        if (camara != null)
+        {
+            camara.AddTarget(this.transform);
+        }
     }
 
     void ConfigurarEsquemaDeControl(int indice)

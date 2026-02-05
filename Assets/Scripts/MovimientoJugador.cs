@@ -17,12 +17,22 @@ public class MovimientoJugador : MonoBehaviour
     public float tiempoCargaNecesario = 0.3f;
     public float tiempoBloqueoHit = 0.2f;
 
+    [Header("Efectos Visuales")]
+    public Animator animatorCarga;
+
+    [Header("Configuración de Dash")]
+    public bool tieneDash;
+    public float velocidadDash = 10f;
+    public float duracionDash = 0.2f;
+
+    // Componentes
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
-    private Vector2 inputMovimiento;
+    private Camera camaraPrincipal;
 
     // Variables de estado
+    private Vector2 inputMovimiento;
     private bool tocandoSuelo;
     private float tiempoCoyote = 0.15f;
     private float contadorCoyote;
@@ -30,52 +40,44 @@ public class MovimientoJugador : MonoBehaviour
     private float tiempoPresionado;
     private bool bloqueadoPorAtaque = false;
     private bool bloqueadoPorHit = false;
-
-    [Header("Efectos Visuales")]
-    public Animator animatorCarga;
-
-    [Header("Configuración de Dash")]
-    public bool tieneDash; // Si esto es true, hará dash. Si es false, hará ataque pesado.
-    public float velocidadDash = 10f;
-    public float duracionDash = 0.2f;
     private bool estaDasheando = false;
+    private float mitadAnchoJugador;
 
     void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Referencia a la cámara y cálculo de bordes del sprite
+        camaraPrincipal = Camera.main;
+        if (spriteRenderer != null)
+        {
+            mitadAnchoJugador = spriteRenderer.bounds.extents.x;
+        }
     }
 
     void FixedUpdate()
     {
         // 1. GESTIÓN DE BLOQUEOS
-        // Si estamos muertos, atacando o heridos, frenamos y salimos del FixedUpdate
         if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit || estaDasheando)
         {
-            // Solo frenamos si NO estamos dasheando (porque en el dash queremos que mantenga su velocidad)
             if (!estaDasheando) rb.velocity = new Vector2(0, rb.velocity.y);
             animator.SetFloat("VelocidadVertical", rb.velocity.y);
             return;
         }
 
+        // 2. DETECCIÓN DE SUELO
         tocandoSuelo = Physics2D.OverlapBox(detectorSuelo.position, tamañoCajaDeteccion, 0f, capaSuelo);
 
         // 3. LÓGICA DE COYOTE TIME
-        if (tocandoSuelo)
-        {
-            contadorCoyote = tiempoCoyote;
-        }
-        else
-        {
-            contadorCoyote -= Time.fixedDeltaTime;
-        }
+        if (tocandoSuelo) contadorCoyote = tiempoCoyote;
+        else contadorCoyote -= Time.fixedDeltaTime;
 
-        // 4. GRAVEDAD PRO (Ajustada para un salto más lento)
+        // 4. GRAVEDAD DINÁMICA
         if (!estaDasheando)
         {
-            if (rb.velocity.y < 0) rb.gravityScale = 1.2f;
-            else rb.gravityScale = 0.7f;
+            rb.gravityScale = (rb.velocity.y < 0) ? 1.2f : 0.7f;
         }
 
         // 5. MOVIMIENTO HORIZONTAL
@@ -89,6 +91,25 @@ public class MovimientoJugador : MonoBehaviour
         // 7. GIRAR SPRITE
         if (inputMovimiento.x > 0) spriteRenderer.flipX = false;
         else if (inputMovimiento.x < 0) spriteRenderer.flipX = true;
+    }
+
+    void LateUpdate()
+    {
+        // --- RESTRICCIÓN DE PANTALLA ---
+        // Evita que el jugador salga de los bordes izquierdo/derecho de la cámara
+        if (!estaMuerto && camaraPrincipal != null)
+        {
+            float limiteIzquierdo = camaraPrincipal.ViewportToWorldPoint(new Vector3(0, 0, 0)).x;
+            float limiteDerecho = camaraPrincipal.ViewportToWorldPoint(new Vector3(1, 0, 0)).x;
+
+            float xClamped = Mathf.Clamp(transform.position.x, limiteIzquierdo + mitadAnchoJugador, limiteDerecho - mitadAnchoJugador);
+
+            if (xClamped != transform.position.x)
+            {
+                transform.position = new Vector3(xClamped, transform.position.y, transform.position.z);
+                if (estaDasheando) rb.velocity = new Vector2(0, rb.velocity.y);
+            }
+        }
     }
 
     // --- ENTRADAS DE CONTROL (INPUT SYSTEM) ---
@@ -117,12 +138,7 @@ public class MovimientoJugador : MonoBehaviour
         if (context.started)
         {
             tiempoPresionado = Time.time;
-
-            // 1. Activamos el efecto visual
             animatorCarga.SetBool("isCharging", true);
-
-            // 2. Sincronizamos la velocidad: 
-            // Si la animación dura 1s y tu carga es de 0.3s, la velocidad debe ser 1/0.3
             animatorCarga.speed = 1f / tiempoCargaNecesario;
         }
 
@@ -134,43 +150,50 @@ public class MovimientoJugador : MonoBehaviour
 
             if (duracionFinal >= tiempoCargaNecesario)
             {
-                if (tieneDash)
-                {
-                    StartCoroutine(SecuenciaDash());
-                }
-                else
-                {
-                    StartCoroutine(SecuenciaAtaquePesado());
-                }
+                if (tieneDash) StartCoroutine(SecuenciaDash());
+                else StartCoroutine(SecuenciaAtaquePesado());
             }
             else
             {
                 animator.SetTrigger("Atacar");
             }
-            spriteRenderer.color = Color.white;
         }
     }
 
-    // --- SECUENCIAS (CORRUTINAS) ---
+    // --- CORRUTINAS ---
 
     IEnumerator SecuenciaAtaquePesado()
     {
         bloqueadoPorAtaque = true;
         rb.velocity = new Vector2(0, rb.velocity.y);
         animator.SetTrigger("Atacar2");
-
-        yield return new WaitForSeconds(0.6f); // Duración animación
-        yield return new WaitForSeconds(0.3f); // Recuperación extra
-
+        yield return new WaitForSeconds(0.6f);
+        yield return new WaitForSeconds(0.3f);
         bloqueadoPorAtaque = false;
+    }
+
+    IEnumerator SecuenciaDash()
+    {
+        estaDasheando = true;
+        float gravedadOriginal = rb.gravityScale;
+        rb.gravityScale = 0;
+
+        float direccion = spriteRenderer.flipX ? -1f : 1f;
+        rb.velocity = new Vector2(direccion * velocidadDash, 0);
+
+        animator.SetTrigger("Dash");
+        yield return new WaitForSeconds(duracionDash);
+
+        rb.velocity = Vector2.zero;
+        rb.gravityScale = gravedadOriginal;
+        estaDasheando = false;
     }
 
     IEnumerator SecuenciaHit()
     {
         bloqueadoPorHit = true;
-        animator.SetTrigger("Recibir_Hit"); // Asegúrate de que el Trigger se llame "Hit" en el Animator
+        animator.SetTrigger("Recibir_Hit");
         yield return new WaitForSeconds(tiempoBloqueoHit);
-
         bloqueadoPorHit = false;
     }
 
@@ -197,23 +220,5 @@ public class MovimientoJugador : MonoBehaviour
             Gizmos.color = tocandoSuelo ? Color.green : Color.red;
             Gizmos.DrawWireCube(detectorSuelo.position, tamañoCajaDeteccion);
         }
-    }
-
-    IEnumerator SecuenciaDash()
-    {
-        estaDasheando = true;
-        float gravedadOriginal = rb.gravityScale;
-        rb.gravityScale = 0;
-
-        float direccion = spriteRenderer.flipX ? -1f : 1f;
-        rb.velocity = new Vector2(direccion * velocidadDash, 0);
-
-        animator.SetTrigger("Dash");
-
-        yield return new WaitForSeconds(duracionDash);
-
-        rb.velocity = Vector2.zero;
-        rb.gravityScale = gravedadOriginal;
-        estaDasheando = false;  
     }
 }
