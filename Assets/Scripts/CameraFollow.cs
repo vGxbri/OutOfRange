@@ -1,81 +1,87 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class CameraFollow : MonoBehaviour
 {
-    [Header("Objetivo")]
-    public Transform target;
+    [Header("Objetivos")]
+    public List<Transform> targets = new List<Transform>();
 
-    [Header("Zona Muerta (Libertad de movimiento)")]
-    public Vector2 deadZoneSize = new Vector2(3f, 2f);
+    [Header("Configuración")]
     public float smoothSpeed = 5f;
-
-    [Header("Límites de Movimiento (Bordes del Mapa)")]
-    public float minWidth = -10f; // Límite izquierdo
-    public float maxWidth = 50f;  // Límite derecho
-    public float minHeight = -2f; // Límite inferior
-    public float maxHeight = 10f; // Límite superior
-
-    [Header("Ajustes Extra")]
     public Vector2 offset;
 
-    private Vector3 targetPos;
+    [Header("Límites del Mapa")]
+    public float minWidth = -10f;
+    public float maxWidth = 50f;
+    public float minHeight = -2f;
+    public float maxHeight = 10f;
+
+    private Camera cam;
     private float initialZ;
 
     void Start()
     {
-        if (target == null) return;
-
+        cam = GetComponent<Camera>();
         initialZ = transform.position.z;
 
-        // Calculamos posición inicial respetando todos los límites
-        Vector3 playerPos = target.position + (Vector3)offset;
-        float startX = Mathf.Clamp(playerPos.x, minWidth, maxWidth);
-        float startY = Mathf.Clamp(playerPos.y, minHeight, maxHeight);
-
-        transform.position = new Vector3(startX, startY, initialZ);
-        targetPos = transform.position;
+        // Intento inicial de buscar jugadores si ya están en la escena
+        EncontrarJugadores();
     }
 
     void LateUpdate()
     {
-        if (target == null) return;
-
-        Vector3 playerPos = target.position + (Vector3)offset;
-
-        // --- LÓGICA DE ZONA MUERTA ---
-        float deltaX = playerPos.x - targetPos.x;
-        if (Mathf.Abs(deltaX) > deadZoneSize.x)
+        // Si no hay nadie a quien seguir, buscamos. Si sigue sin haber nadie, paramos.
+        if (targets.Count == 0 || targets[0] == null)
         {
-            targetPos.x += deltaX - (deadZoneSize.x * Mathf.Sign(deltaX));
+            EncontrarJugadores();
+            return;
         }
 
-        float deltaY = playerPos.y - targetPos.y;
-        if (Mathf.Abs(deltaY) > deadZoneSize.y)
-        {
-            targetPos.y += deltaY - (deadZoneSize.y * Mathf.Sign(deltaY));
-        }
+        // 1. Calcular punto medio
+        Vector3 centerPoint = GetCenterPoint();
+        Vector3 targetPos = centerPoint + (Vector3)offset;
 
-        // --- APLICAR LÍMITES TOTALES (CLAMP) ---
-        float clampedX = Mathf.Clamp(targetPos.x, minWidth, maxWidth);
-        float clampedY = Mathf.Clamp(targetPos.y, minHeight, maxHeight);
+        // 2. Límites de la cámara
+        float camHeight = cam.orthographicSize;
+        float camWidth = camHeight * cam.aspect;
+
+        // IMPORTANTE: Si maxWidth es muy pequeño, el Clamp puede bloquear la cámara.
+        // Asegúrate de que (maxWidth - minWidth) sea mayor que el ancho de la cámara.
+        float clampedX = Mathf.Clamp(targetPos.x, minWidth + camWidth, maxWidth - camWidth);
+        float clampedY = Mathf.Clamp(targetPos.y, minHeight + camHeight, maxHeight - camHeight);
 
         Vector3 finalPosition = new Vector3(clampedX, clampedY, initialZ);
 
-        // Movimiento suave
+        // 3. Movimiento
         transform.position = Vector3.Lerp(transform.position, finalPosition, smoothSpeed * Time.deltaTime);
     }
 
-    void OnDrawGizmos()
+    private void EncontrarJugadores()
     {
-        // Dibujamos la zona muerta en ROJO
-        Gizmos.color = Color.red;
-        Vector3 center = Application.isPlaying ? targetPos : transform.position;
-        Gizmos.DrawWireCube(center, new Vector3(deadZoneSize.x * 2, deadZoneSize.y * 2, 0));
+        // Busca cualquier objeto que tenga el script MovimientoJugador
+        MovimientoJugador[] jugadores = FindObjectsOfType<MovimientoJugador>();
+        foreach (var j in jugadores)
+        {
+            if (!targets.Contains(j.transform)) targets.Add(j.transform);
+        }
+    }
 
-        // Dibujamos los límites del mapa en AMARILLO (Opcional, muy útil)
-        Gizmos.color = Color.yellow;
-        Vector3 limitCenter = new Vector3((minWidth + maxWidth) / 2, (minHeight + maxHeight) / 2, 0);
-        Vector3 limitSize = new Vector3(maxWidth - minWidth, maxHeight - minHeight, 0);
-        Gizmos.DrawWireCube(limitCenter, limitSize);
+    Vector3 GetCenterPoint()
+    {
+        var bounds = new Bounds(targets[0].position, Vector3.zero);
+        for (int i = 0; i < targets.Count; i++)
+        {
+            if (targets[i] != null) bounds.Encapsulate(targets[i].position);
+        }
+        return bounds.center;
+    }
+
+    public void AddTarget(Transform newTarget)
+    {
+        if (targets == null) targets = new List<Transform>(); // Evita error de lista nula
+        if (!targets.Contains(newTarget))
+        {
+            targets.Add(newTarget);
+        }
     }
 }
