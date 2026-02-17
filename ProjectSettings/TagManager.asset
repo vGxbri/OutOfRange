@@ -56,6 +56,9 @@ TagManager:
   - name: Animaciones
     uniqueID: 1935124631
     locked: 0
+  - name: Zona Jugador
+    uniqueID: 1337982281
+    locked: 0
   - name: Jugador
     uniqueID: 2510260257
     locked: 0
