@@ -70,9 +70,9 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: 1337982281
+  m_SortingLayer: 6
+  m_SortingOrder: 9
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 0.25490198}
   m_FlipX: 0
@@ -217,3 +217,11 @@ MonoBehaviour:
   colCirculo: {fileID: 6579784474313678219}
   colCuadrado: {fileID: 7211538079741942022}
   visuales: {fileID: 5193252713146704766}
+  lineaBorde: {fileID: 0}
+  colorRelleno: {r: 1, g: 0, b: 0, a: 0.12}
+  colorBorde: {r: 1, g: 0, b: 0, a: 0.5}
+  anchoLinea: 0.03
+  tamanoGuion: 1
+  espacioGuion: 1
+  nombreCapaOrden: Zona Jugador
+  ordenCapa: 10

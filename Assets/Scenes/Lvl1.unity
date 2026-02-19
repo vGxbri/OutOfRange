@@ -884,7 +884,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1075230965
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1097,12 +1097,24 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 849596297785808382, guid: 4b447d2672e24f649890da66f5a4f8f8, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 849596297785808382, guid: 4b447d2672e24f649890da66f5a4f8f8, type: 3}
       propertyPath: m_SortingLayer
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 849596297785808382, guid: 4b447d2672e24f649890da66f5a4f8f8, type: 3}
       propertyPath: m_SortingLayerID
       value: 1337982281
+      objectReference: {fileID: 0}
+    - target: {fileID: 849596297785808382, guid: 4b447d2672e24f649890da66f5a4f8f8, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2851900427524004773, guid: 4b447d2672e24f649890da66f5a4f8f8, type: 3}
+      propertyPath: radio
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6227942395254060341, guid: 4b447d2672e24f649890da66f5a4f8f8, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1505,7 +1517,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!212 &1790229847
 SpriteRenderer:
   m_ObjectHideFlags: 0
