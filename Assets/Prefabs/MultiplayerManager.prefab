@@ -89,4 +89,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27f5ed06b7d5f0e43b3a20bb30be3cd2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefabJugador: {fileID: 8847985064845794687, guid: 0636622fd20eb854b9e6505d93029638, type: 3}
+  prefabJugador1: {fileID: 8847985064845794687, guid: 0636622fd20eb854b9e6505d93029638, type: 3}
+  prefabJugador2: {fileID: 1142973415396915040, guid: ab6495436f0dcac4181947f93f1d865b, type: 3}

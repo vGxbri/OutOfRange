@@ -9,11 +9,15 @@ public class UnirseMismoTeclado : MonoBehaviour
 
     private PlayerInputManager manager;
 
+    // Control: cuántos jugadores se han unido de teclado (para saber si el siguiente es Izquierda o Derecha)
+    private int jugadoresTecladoUnidos = 0;
+    private bool j1Unido = false;
+    private bool j2Unido = false;
+
     void Awake()
     {
         manager = GetComponent<PlayerInputManager>();
         
-        // Por defecto, cargamos el prefab del J1 para que esté listo
         if (prefabJugador1 != null)
         {
             manager.playerPrefab = prefabJugador1;
@@ -22,32 +26,79 @@ public class UnirseMismoTeclado : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current == null) return;
+        // Leer selección del menú (0 = teclado, 1 = mando)
+        int controlJ1 = PlayerPrefs.GetInt("ControlJ1", 0);
+        int controlJ2 = PlayerPrefs.GetInt("ControlJ2", 0);
 
-        // JUGADOR 1 (ESPACIO)
-        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        // --- JUGADOR 1 ---
+        if (!j1Unido)
         {
-            if (manager.playerCount == 0)
+            if (controlJ1 == 0) // Teclado
             {
-                // Nos aseguramos de que el prefab activo sea el 1
-                manager.playerPrefab = prefabJugador1;
-                
-                // Unimos al jugador
-                manager.JoinPlayer(0, -1, "Teclado_Izquierda", Keyboard.current);
+                if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+                {
+                    manager.playerPrefab = prefabJugador1;
+                    string esquema = (jugadoresTecladoUnidos == 0) ? "Teclado_Izquierda" : "Teclado_Derecha";
+                    manager.JoinPlayer(0, -1, esquema, Keyboard.current);
+                    jugadoresTecladoUnidos++;
+                    j1Unido = true;
+                }
+            }
+            else // Mando
+            {
+                if (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame)
+                {
+                    manager.playerPrefab = prefabJugador1;
+                    manager.JoinPlayer(0, -1, "Mando", Gamepad.current);
+                    j1Unido = true;
+                }
             }
         }
 
-        // JUGADOR 2 (ENTER)
-        if (Keyboard.current.enterKey.wasPressedThisFrame)
+        // --- JUGADOR 2 ---
+        if (!j2Unido && j1Unido)
         {
-            if (manager.playerCount == 1) // Solo entra si ya hay 1 jugador
+            if (controlJ2 == 0) // Teclado
             {
-                // ¡EL TRUCO! Cambiamos el prefab al 2 justo antes de que entre
-                manager.playerPrefab = prefabJugador2;
-
-                // Unimos al jugador
-                manager.JoinPlayer(1, -1, "Teclado_Derecha", Keyboard.current);
+                if (Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame)
+                {
+                    manager.playerPrefab = prefabJugador2;
+                    string esquema = (jugadoresTecladoUnidos == 0) ? "Teclado_Izquierda" : "Teclado_Derecha";
+                    manager.JoinPlayer(1, -1, esquema, Keyboard.current);
+                    jugadoresTecladoUnidos++;
+                    j2Unido = true;
+                }
             }
+            else // Mando
+            {
+                // Si J1 también usa mando, necesitamos un SEGUNDO mando
+                Gamepad mando = ObtenerMandoParaJ2(controlJ1);
+                if (mando != null && mando.buttonSouth.wasPressedThisFrame)
+                {
+                    manager.playerPrefab = prefabJugador2;
+                    manager.JoinPlayer(1, -1, "Mando", mando);
+                    j2Unido = true;
+                }
+            }
+        }
+    }
+
+    Gamepad ObtenerMandoParaJ2(int controlJ1)
+    {
+        if (controlJ1 == 0)
+        {
+            // J1 usa teclado → J2 puede usar cualquier mando
+            return Gamepad.current;
+        }
+        else
+        {
+            // J1 también usa mando → J2 necesita un mando DIFERENTE
+            // Si solo hay 1 mando conectado, Gamepad.all tendrá solo uno y no podrán ambos usar mando
+            if (Gamepad.all.Count >= 2)
+            {
+                return Gamepad.all[1]; // El segundo mando
+            }
+            return null;
         }
     }
 }

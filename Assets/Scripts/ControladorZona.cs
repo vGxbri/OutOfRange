@@ -64,10 +64,12 @@ public class ControladorZona : MonoBehaviour
             lineaBorde.SetPosition(i, new Vector3(x, y, 0));
             angulo += (360f / segmentos);
         }
+
+        float perimetro = 2f * Mathf.PI * radio;
         
         // Ajustar tiling para dashes perfectos
-        float densidad = 8f; 
-        if(_materialCache) _materialCache.mainTextureScale = new Vector2(densidad, 1); 
+        float densidad = perimetro / espacioGuion;
+        if(_materialCache) _materialCache.mainTextureScale = new Vector2(densidad, 1);
     }
 
     void DibujarCuadrado()
@@ -88,7 +90,8 @@ public class ControladorZona : MonoBehaviour
         lineaBorde.SetPosition(3, new Vector3(w, -h, 0));
         
         // Tiling perfecto
-        float densidad = 8f;
+        float perimetro = (tamanoBox.x * 2f) + (tamanoBox.y * 2f);
+        float densidad = perimetro / espacioGuion;
         if(_materialCache) _materialCache.mainTextureScale = new Vector2(densidad, 1);
     }
 
@@ -118,6 +121,8 @@ public class ControladorZona : MonoBehaviour
         lineaBorde.useWorldSpace = false;
         lineaBorde.startWidth = anchoLinea;
         lineaBorde.endWidth = anchoLinea;
+        lineaBorde.numCornerVertices = 4; // Añade geometría en las esquinas para suavizar el giro
+        lineaBorde.numCapVertices = 4;    // Suaviza los extremos de los guiones
         
         lineaBorde.sortingLayerName = nombreCapaOrden;
         lineaBorde.sortingOrder = ordenCapa;
@@ -196,7 +201,9 @@ public class ControladorZona : MonoBehaviour
             colCirculo.radius = radio;
             
             // VISUAL (El círculo se escala por Diámetro = Radio * 2)
-            if(visuales) visuales.localScale = new Vector3(radio * 2, radio * 2, 1);
+            // Sumamos el anchoLinea para que el relleno muerda el borde y no queden huecos
+            float escalaReal = (radio * 2) + anchoLinea;
+            if(visuales) visuales.localScale = new Vector3(escalaReal, escalaReal, 1);
 
             // BORDE (Círculo)
             DibujarCirculo();
@@ -208,7 +215,7 @@ public class ControladorZona : MonoBehaviour
             colCuadrado.size = tamanoBox;
 
             // VISUAL
-            if(visuales) visuales.localScale = new Vector3(tamanoBox.x, tamanoBox.y, 1);
+            if(visuales) visuales.localScale = new Vector3(tamanoBox.x + anchoLinea, tamanoBox.y + anchoLinea, 1);
 
             // BORDE (Cuadrado)
             DibujarCuadrado();

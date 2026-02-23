@@ -50,21 +50,31 @@ public class InicializadorJugador : MonoBehaviour
 
     void ConfigurarEsquemaDeControl(int indice)
     {
-        // Revisamos qué dispositivo se le asignó a este jugador al nacer
+        // El esquema ya se asigna al hacer JoinPlayer en UnirseMismoTeclado.
+        // Este método es un fallback por si algo falla.
         if (playerInput.devices.Count > 0)
         {
             InputDevice dispositivo = playerInput.devices[0];
+            int controlSeleccionado = PlayerPrefs.GetInt(indice == 0 ? "ControlJ1" : "ControlJ2", 0);
 
-            if (dispositivo is Keyboard)
+            if (dispositivo is Gamepad)
             {
-                // Si es teclado, asignamos Izquierda o Derecha según el índice
-                string esquema = (indice == 0) ? "Teclado_Izquierda" : "Teclado_Derecha";
-                playerInput.SwitchCurrentControlScheme(esquema, dispositivo);
-            }
-            else if (dispositivo is Gamepad)
-            {
-                // Si es mando, usamos el esquema "Mando" (o el nombre que tengas en el Asset)
                 playerInput.SwitchCurrentControlScheme("Mando", dispositivo);
+            }
+            else if (dispositivo is Keyboard)
+            {
+                // Si ambos usan teclado, J1=Izquierda, J2=Derecha
+                // Si solo uno usa teclado, ese usa Izquierda
+                int otroControl = PlayerPrefs.GetInt(indice == 0 ? "ControlJ2" : "ControlJ1", 0);
+                bool ambosUsanTeclado = (controlSeleccionado == 0 && otroControl == 0);
+                
+                string esquema;
+                if (ambosUsanTeclado)
+                    esquema = (indice == 0) ? "Teclado_Izquierda" : "Teclado_Derecha";
+                else
+                    esquema = "Teclado_Solo"; // Solo uno usa teclado, usa A/D + W(salto) + Enter(ataque)
+                
+                playerInput.SwitchCurrentControlScheme(esquema, dispositivo);
             }
         }
     }
