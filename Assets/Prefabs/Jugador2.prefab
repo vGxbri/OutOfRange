@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &61477778240222463
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8932374162052458955}
+  m_Layer: 7
+  m_Name: PuntoAtaque
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8932374162052458955
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 61477778240222463}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.2, y: 0.229, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2920693635306242901}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1142973415396915040
 GameObject:
   m_ObjectHideFlags: 0
@@ -17,9 +48,10 @@ GameObject:
   - component: {fileID: 4980240825109993526}
   - component: {fileID: 4068934929119245962}
   - component: {fileID: -2688900924539736295}
+  - component: {fileID: 2422643068811276380}
   m_Layer: 7
   m_Name: Jugador2
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -39,6 +71,7 @@ Transform:
   m_Children:
   - {fileID: 6872335051473829270}
   - {fileID: 8586322369996738890}
+  - {fileID: 8932374162052458955}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &7807110228263571007
@@ -80,7 +113,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -1784707039
-  m_SortingLayer: 6
+  m_SortingLayer: 7
   m_SortingOrder: 0
   m_Sprite: {fileID: 4723107735738678597, guid: 174209194dbf2fb44aef1ea1ba76a2f1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -146,10 +179,10 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.0035936832, y: 0.000052943826}
+  m_Offset: {x: 0.0035936832, y: 0.1985751}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
+    pivot: {x: 0.5, y: 0}
     oldSize: {x: 0.32, y: 0.39}
     newSize: {x: 0.47, y: 0.51}
     adaptiveTilingThreshold: 0.5
@@ -157,7 +190,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.31353414, y: 0.39297095}
+  m_Size: {x: 0.31353414, y: 0.3905351}
   m_EdgeRadius: 0
 --- !u!114 &675280891309811247
 MonoBehaviour:
@@ -316,6 +349,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   numeroJugador: 2
+--- !u!114 &2422643068811276380
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142973415396915040}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acdf3e5873e6d6f419ad0c8fb706dbea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  puntoAtaque: {fileID: 8932374162052458955}
+  rangoAtaque: 0.08
+  "da\xF1oAtaque": 1
+  capaEnemigos:
+    serializedVersion: 2
+    m_Bits: 256
 --- !u!1 &2815718824894580838
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,7 +392,7 @@ Transform:
   m_GameObject: {fileID: 2815718824894580838}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.251, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -374,7 +425,7 @@ Transform:
   m_GameObject: {fileID: 5527336759153758583}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.218, z: 0}
   m_LocalScale: {x: 1.3, y: 1.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using EasyTransition;
 
 public class MenuManager : MonoBehaviour
 {
@@ -10,6 +11,9 @@ public class MenuManager : MonoBehaviour
 
     [Header("Botones del menú principal")]
     public GameObject botonContinuar;
+
+    [Header("Transición")]
+    public TransitionSettings transicion;
 
     private enum EstadoMenu { Principal, Controles, ConfirmarNuevaPartida }
     private EstadoMenu estadoActual = EstadoMenu.Principal;
@@ -87,13 +91,23 @@ public class MenuManager : MonoBehaviour
     public void OnContinuar()
     {
         string escena = GestorGuardado.ObtenerEscenaGuardada();
-        SceneManager.LoadScene(escena);
+        TransitionManager.Instance().Transition(escena, transicion, 0f);
+    }
+
+    // --- BOTÓN "SALIR" ---
+    public void Salir()
+    {
+        #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+        #else
+        Application.Quit();
+        #endif
     }
 
     // --- UTILIDAD ---
     void IniciarNuevaPartida()
     {
         GestorGuardado.GuardarProgreso("Tutorial", 0);
-        SceneManager.LoadScene("Tutorial");
+        TransitionManager.Instance().Transition("Tutorial", transicion, 0f);
     }
 }

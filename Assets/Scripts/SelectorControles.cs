@@ -18,8 +18,6 @@ public class SelectorControles : MonoBehaviour
     public RectTransform[] esquinasMandoJ2;
 
     [Header("Configuración Visual")]
-    public Color colorEsquinaActiva = new Color(1f, 0.84f, 0f); // Dorado
-    public Color colorEsquinaInactiva = new Color(1f, 1f, 1f, 0.15f);
     public float velocidadAnimacion = 8f;
     public float escalaActiva = 1f;
     public float escalaInactiva = 0.5f;
@@ -70,21 +68,23 @@ public class SelectorControles : MonoBehaviour
         if (esquinas == null) return;
 
         float objetivo = activo ? escalaActiva : escalaInactiva;
-        Color colorObjetivo = activo ? colorEsquinaActiva : colorEsquinaInactiva;
+        float alphaObjetivo = activo ? 1f : 0f;
 
         for (int i = 0; i < esquinas.Length && i < 4; i++)
         {
             if (esquinas[i] == null) continue;
 
             // Animar escala
-            escalasActuales[i] = Mathf.Lerp(escalasActuales[i], objetivo, Time.deltaTime * velocidadAnimacion);
+            escalasActuales[i] = Mathf.Lerp(escalasActuales[i], objetivo, Time.unscaledDeltaTime * velocidadAnimacion);
             esquinas[i].localScale = Vector3.one * escalasActuales[i];
 
-            // Animar color
+            // Animar color (solo opacidad)
             Image img = esquinas[i].GetComponent<Image>();
             if (img != null)
             {
-                img.color = Color.Lerp(img.color, colorObjetivo, Time.deltaTime * velocidadAnimacion);
+                Color c = img.color;
+                c.a = Mathf.Lerp(c.a, alphaObjetivo, Time.unscaledDeltaTime * velocidadAnimacion);
+                img.color = c;
             }
         }
     }

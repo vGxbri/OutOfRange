@@ -86,7 +86,10 @@ public class InicializadorJugador : MonoBehaviour
 
         if (spawn != null)
         {
-            transform.position = spawn.transform.position;
+            // Solo copiar X e Y, mantener Z original para no salir del clipping de la cámara
+            Vector3 pos = spawn.transform.position;
+            pos.z = transform.position.z;
+            transform.position = pos;
         }
     }
 }

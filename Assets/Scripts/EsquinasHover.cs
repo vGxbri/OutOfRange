@@ -64,7 +64,7 @@ public class EsquinasHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         float t = 0f;
         while (t < duracionFade)
         {
-            t += Time.deltaTime;
+            t += Time.unscaledDeltaTime;
             float alpha = Mathf.Clamp01(t / duracionFade);
             SetAlpha(alpha);
             yield return null;
@@ -77,7 +77,7 @@ public class EsquinasHover : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
         float t = 0f;
         while (t < duracionFade)
         {
-            t += Time.deltaTime;
+            t += Time.unscaledDeltaTime;
             float alpha = 1f - Mathf.Clamp01(t / duracionFade);
             SetAlpha(alpha);
             yield return null;

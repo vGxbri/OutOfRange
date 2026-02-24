@@ -46,7 +46,7 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
     {
         if (lineaSubrayado != null)
         {
-            float nuevoX = Mathf.Lerp(lineaSubrayado.localScale.x, anchoObjetivo, Time.deltaTime * velocidadAnimacion);
+            float nuevoX = Mathf.Lerp(lineaSubrayado.localScale.x, anchoObjetivo, Time.unscaledDeltaTime * velocidadAnimacion);
             lineaSubrayado.localScale = new Vector3(nuevoX, 1, 1);
         }
     }
