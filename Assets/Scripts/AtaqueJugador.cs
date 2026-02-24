@@ -6,6 +6,8 @@ public class AtaqueJugador : MonoBehaviour
     public Transform puntoAtaque;
     public float rangoAtaque = 0.5f;
     public int dañoAtaque = 1;
+    public int dañoAtaquePesado = 2;
+    public float rangoAtaquePesado = 0.65f;
     public LayerMask capaEnemigos;
 
     private SpriteRenderer spriteRenderer;
@@ -15,31 +17,44 @@ public class AtaqueJugador : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    // Llamado desde Animation Event o desde el script de movimiento
     public void EjecutarAtaque()
+    {
+        Golpear(dañoAtaque, rangoAtaque);
+    }
+
+    public void EjecutarAtaquePesado()
+    {
+        Golpear(dañoAtaquePesado, rangoAtaquePesado);
+    }
+
+    void Golpear(int daño, float rango)
     {
         if (puntoAtaque == null) return;
 
-        // Calcular posición real del ataque (espejada si mira a la izquierda)
-        Vector3 posAtaque = puntoAtaque.position;
-        if (spriteRenderer != null && spriteRenderer.flipX)
-        {
-            // Espejar la X del punto de ataque respecto al centro del jugador
-            float offsetX = puntoAtaque.localPosition.x;
-            posAtaque = transform.position + new Vector3(-offsetX, puntoAtaque.localPosition.y, 0);
-        }
+        Vector3 posAtaque = ObtenerPosAtaque();
 
         Collider2D[] enemigosGolpeados = Physics2D.OverlapCircleAll(
-            posAtaque, rangoAtaque, capaEnemigos);
+            posAtaque, rango, capaEnemigos);
 
         foreach (var enemigo in enemigosGolpeados)
         {
             VidaEnemigo vida = enemigo.GetComponent<VidaEnemigo>();
             if (vida != null)
             {
-                vida.RecibirDaño(dañoAtaque, transform.position);
+                vida.RecibirDaño(daño, transform.position);
             }
         }
+    }
+
+    Vector3 ObtenerPosAtaque()
+    {
+        Vector3 posAtaque = puntoAtaque.position;
+        if (spriteRenderer != null && spriteRenderer.flipX)
+        {
+            float offsetX = puntoAtaque.localPosition.x;
+            posAtaque = transform.position + new Vector3(-offsetX, puntoAtaque.localPosition.y, 0);
+        }
+        return posAtaque;
     }
 
     void OnDrawGizmosSelected()
@@ -55,6 +70,9 @@ public class AtaqueJugador : MonoBehaviour
 
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(posAtaque, rangoAtaque);
+
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(posAtaque, rangoAtaquePesado);
     }
 }
 

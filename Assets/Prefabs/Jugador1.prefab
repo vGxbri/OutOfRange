@@ -501,6 +501,8 @@ MonoBehaviour:
   puntoAtaque: {fileID: 6005941512064645450}
   rangoAtaque: 0.08
   "da\xF1oAtaque": 1
+  "da\xF1oAtaquePesado": 2
+  rangoAtaquePesado: 0.1
   capaEnemigos:
     serializedVersion: 2
     m_Bits: 256

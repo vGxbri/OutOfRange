@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 using EasyTransition;
 
 public class PauseManager : MonoBehaviour
@@ -7,6 +8,10 @@ public class PauseManager : MonoBehaviour
     [Header("Contenedores")]
     public GameObject contenedorPausa;
     public GameObject contenedorControles;
+
+    [Header("Primer botón seleccionado (para mando)")]
+    public GameObject primerBotonPausa;
+    public GameObject primerBotonControles;
 
     [Header("Transición")]
     public TransitionSettings transicion;
@@ -28,7 +33,7 @@ public class PauseManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Cancel"))
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton7))
         {
             if (enControles) VolverAPausa();
             else if (enPausa) Reanudar();
@@ -42,6 +47,7 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 0f;
         if (contenedorPausa != null) contenedorPausa.SetActive(true);
         if (blur != null) blur.ActivarBlur();
+        SeleccionarBoton(primerBotonPausa);
     }
 
     public void Reanudar()
@@ -57,6 +63,7 @@ public class PauseManager : MonoBehaviour
         if (contenedorPausa != null) contenedorPausa.SetActive(false);
         if (contenedorControles != null) contenedorControles.SetActive(true);
         enControles = true;
+        SeleccionarBoton(primerBotonControles);
     }
 
     public void VolverAPausa()
@@ -64,6 +71,7 @@ public class PauseManager : MonoBehaviour
         if (contenedorControles != null) contenedorControles.SetActive(false);
         if (contenedorPausa != null) contenedorPausa.SetActive(true);
         enControles = false;
+        SeleccionarBoton(primerBotonPausa);
     }
 
     public void VolverAlMenu()
@@ -83,4 +91,13 @@ public class PauseManager : MonoBehaviour
     }
 
     public bool EstaEnPausa() => enPausa;
+
+    void SeleccionarBoton(GameObject boton)
+    {
+        if (boton != null && EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(boton);
+        }
+    }
 }

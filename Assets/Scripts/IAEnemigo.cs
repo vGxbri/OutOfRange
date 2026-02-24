@@ -75,6 +75,46 @@ public class IAEnemigo : MonoBehaviour
         }
     }
 
+    private float ultimoGiroColision;
+
+    void OnCollisionEnter2D(Collision2D colision)
+    {
+        if (colision.collider.CompareTag("Player")) return;
+        if (Time.time - ultimoGiroColision < 0.5f) return;
+
+        bool esPared = ((1 << colision.gameObject.layer) & capaSuelo) != 0;
+        IAEnemigo otroEnemigo = colision.collider.GetComponent<IAEnemigo>();
+
+        if (esPared || otroEnemigo != null)
+        {
+            foreach (ContactPoint2D contacto in colision.contacts)
+            {
+                if (Mathf.Abs(contacto.normal.x) > 0.5f)
+                {
+                    GirarPorColision();
+
+                    // Forzar que el otro enemigo también gire
+                    if (otroEnemigo != null)
+                        otroEnemigo.GirarPorColision();
+
+                    break;
+                }
+            }
+        }
+    }
+
+    public void GirarPorColision()
+    {
+        if (Time.time - ultimoGiroColision < 0.5f) return;
+        Girar();
+        ultimoGiroColision = Time.time;
+        if (estadoActual == Estado.Perseguir)
+        {
+            objetivoActual = null;
+            CambiarEstado(Estado.Patrullar);
+        }
+    }
+
     void Update()
     {
         switch (estadoActual)
@@ -226,13 +266,22 @@ public class IAEnemigo : MonoBehaviour
         // Moverse hacia el objetivo
         direccion = dirHaciaJugador > 0 ? 1 : -1;
 
-        // Comprobar borde antes de moverse
+        // Comprobar pared y borde antes de moverse
         Vector2 posicionBorde = (Vector2)transform.position + new Vector2(direccion * distanciaDeteccionPared, 0);
         RaycastHit2D hitSuelo = Physics2D.Raycast(posicionBorde, Vector2.down, distanciaDeteccionBorde, capaSuelo);
+        RaycastHit2D hitPared = Physics2D.Raycast(transform.position, Vector2.right * direccion, distanciaDeteccionPared, capaSuelo);
 
-        if (!hitSuelo.collider)
+        if (!hitSuelo.collider || hitPared.collider)
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
+            // Si hay pared, dejar de perseguir
+            if (hitPared.collider)
+            {
+                objetivoActual = null;
+                CambiarEstado(Estado.Patrullar);
+                Girar();
+                return;
+            }
         }
         else
         {

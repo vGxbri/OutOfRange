@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class SelectorControles : MonoBehaviour
 {
@@ -138,6 +139,67 @@ public class SelectorControles : MonoBehaviour
         PlayerPrefs.SetInt("ControlJ2", seleccionJ2);
         PlayerPrefs.Save();
         AplicarSeleccion();
+        AplicarControlesAJugadores();
+    }
+
+    void AplicarControlesAJugadores()
+    {
+        PlayerInput[] jugadores = FindObjectsOfType<PlayerInput>();
+        foreach (var pi in jugadores)
+        {
+            int indice = pi.playerIndex;
+            int control = (indice == 0) ? seleccionJ1 : seleccionJ2;
+            MovimientoJugador mov = pi.GetComponent<MovimientoJugador>();
+
+            if (control == 1) // Mando
+            {
+                if (Gamepad.current != null)
+                {
+                    pi.SwitchCurrentControlScheme("Mando", Gamepad.current);
+                    if (mov != null) mov.enabled = true;
+                }
+                else
+                {
+                    // Congelar jugador hasta que se conecte un mando
+                    if (mov != null) mov.enabled = false;
+                    Debug.Log($"Jugador {indice + 1}: esperando mando...");
+                }
+            }
+            else // Teclado
+            {
+                if (Keyboard.current != null)
+                {
+                    bool ambosUsanTeclado = (seleccionJ1 == 0 && seleccionJ2 == 0);
+                    string esquema;
+                    if (ambosUsanTeclado)
+                        esquema = (indice == 0) ? "Teclado_Izquierda" : "Teclado_Derecha";
+                    else
+                        esquema = "Teclado_Solo";
+                    pi.SwitchCurrentControlScheme(esquema, Keyboard.current);
+                    if (mov != null) mov.enabled = true;
+                }
+            }
+        }
+    }
+
+    void OnEnable()
+    {
+        InputSystem.onDeviceChange -= OnDispositivoCambiado; // evitar duplicados
+        InputSystem.onDeviceChange += OnDispositivoCambiado;
+    }
+
+    void OnDestroy()
+    {
+        InputSystem.onDeviceChange -= OnDispositivoCambiado;
+    }
+
+    void OnDispositivoCambiado(InputDevice device, InputDeviceChange change)
+    {
+        if (device is Gamepad && change == InputDeviceChange.Added)
+        {
+            Debug.Log("Mando conectado, aplicando controles...");
+            AplicarControlesAJugadores();
+        }
     }
 
     // --- Acceso público para otros scripts ---
