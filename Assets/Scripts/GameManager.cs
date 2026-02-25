@@ -6,9 +6,11 @@ public class GameManager : MonoBehaviour
     public bool jugador1LlevaZona = true;
 
     private bool zonaCreada = false;
+    public static bool JuegoIniciado { get; private set; } = false;
 
     void Start()
     {
+        JuegoIniciado = false; // Resetear al empezar la escena
         // Busca jugadores cada 0.5 segundos
         InvokeRepeating("BuscarJugadores", 0.5f, 0.5f);
     }
@@ -41,6 +43,7 @@ public class GameManager : MonoBehaviour
     void CrearZona(GameObject p1, GameObject p2)
     {
         zonaCreada = true;
+        JuegoIniciado = true;
         GameObject z = Instantiate(prefabZona);
         ControladorZona ctrl = z.GetComponent<ControladorZona>();
 

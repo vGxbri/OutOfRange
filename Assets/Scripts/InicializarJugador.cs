@@ -46,6 +46,22 @@ public class InicializadorJugador : MonoBehaviour
         {
             camara.AddTarget(this.transform);
         }
+
+        // --- CORRECCIÓN DE MULTIJUGADOR LOCAL ---
+        // Unity PlayerInputManager, por defecto, intenta hacer la vida "más fácil" en multijugador local
+        // y CAMBIA MÁGICAMENTE la Layer de los jugadores (P1 -> Layer 8, P2 -> Layer 9...) 
+        // para que las cámaras de pantalla partida funcionen. Esto rompe nuestras colisiones enemigas.
+        // Forzamos manualmente que el Jugador vuelva a su Layer original (que en tu proyecto es la 7).
+        RevertirLayer(gameObject, 7);
+    }
+
+    void RevertirLayer(GameObject obj, int capa)
+    {
+        obj.layer = capa;
+        foreach (Transform child in obj.transform)
+        {
+            RevertirLayer(child.gameObject, capa);
+        }
     }
 
     void ConfigurarEsquemaDeControl(int indice)

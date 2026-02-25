@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class IAEnemigo : MonoBehaviour
 {
@@ -12,8 +13,8 @@ public class IAEnemigo : MonoBehaviour
     [Header("Detección")]
     public float rangoDeteccion = 5f;
     public float rangoDeteccionTrasera = 1.5f;
-    public Vector2 offsetDeteccionTrasera = Vector2.zero;
-    public float alturaDeteccion = 1f;
+    public float alturaDeteccion = 1.2f;      // Incrementado para cubrir más área vertical
+    public float offsetYDeteccion = -0.3f;    // Bajado ligeramente para detectar colisionadores en el suelo
     public float rangoAtaque = 1.2f;
     public Vector2 offsetAtaque = Vector2.zero;
     public LayerMask capaJugador;
@@ -115,6 +116,13 @@ public class IAEnemigo : MonoBehaviour
 
     void Update()
     {
+        // Esperar a que el Multiplayer Manager haya cargado ambos jugadores
+        if (!GameManager.JuegoIniciado)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            return;
+        }
+
         switch (estadoActual)
         {
             case Estado.Golpeado:
@@ -147,14 +155,14 @@ public class IAEnemigo : MonoBehaviour
                     if (Random.value < 0.3f) IntentarGirar();
                     CambiarEstado(Estado.Patrullar);
                 }
-                BuscarJugador();
+                IntentarDetectarJugador();
                 return;
 
             case Estado.Patrullar:
                 Patrullar();
                 if (Time.time >= timerEstado)
                     CambiarEstado(Estado.IdlePatrulla);
-                BuscarJugador();
+                IntentarDetectarJugador();
                 return;
 
             case Estado.Perseguir:
@@ -166,35 +174,49 @@ public class IAEnemigo : MonoBehaviour
         ActualizarDireccionVisual();
     }
 
-    void BuscarJugador()
+    // Devuelve el jugador más cercano si lo encuentra, null si no
+    Transform BuscarJugador()
     {
-        // Detección rectangular: ancho = rango de detección, alto = alturaDeteccion
-        Vector2 tamañoCaja = new Vector2(rangoDeteccion * 2f, alturaDeteccion * 2f);
-        Collider2D[] jugadores = Physics2D.OverlapBoxAll(transform.position, tamañoCaja, 0f, capaJugador);
-
-        float distanciaMinima = float.MaxValue;
         Transform masCercano = null;
+        float distanciaMinima = float.MaxValue;
 
-        foreach (var col in jugadores)
+        Vector2 centroFrontal = (Vector2)transform.position + new Vector2(direccion * rangoDeteccion / 2f, offsetYDeteccion);
+        Vector2 tamañoFrontal = new Vector2(rangoDeteccion, alturaDeteccion * 2f);
+
+        // Detección frontal normal filtrada por capa
+        Collider2D[] frontales = Physics2D.OverlapBoxAll(centroFrontal, tamañoFrontal, 0f, capaJugador);
+
+        // Detección trasera normal filtrada por capa
+        Vector2 centroTrasero = (Vector2)transform.position + new Vector2(-direccion * rangoDeteccionTrasera / 2f, offsetYDeteccion);
+        Vector2 tamañoTrasero = new Vector2(rangoDeteccionTrasera, alturaDeteccion * 2f);
+        Collider2D[] traseros = Physics2D.OverlapBoxAll(centroTrasero, tamañoTrasero, 0f, capaJugador);
+
+        // Juntar todos los colliders detectados en ambas cajas
+        List<Collider2D> todosLosDetectados = new List<Collider2D>();
+        todosLosDetectados.AddRange(frontales);
+        todosLosDetectados.AddRange(traseros);
+
+        foreach (var col in todosLosDetectados)
         {
-            float distX = Mathf.Abs(col.transform.position.x - transform.position.x);
-            float dirHaciaJugador = col.transform.position.x - transform.position.x;
-            bool estaDelante = (dirHaciaJugador * direccion) > 0;
-
-            // Detección direccional: rango completo delante, rango reducido detrás
-            if (estaDelante || distX <= rangoDeteccionTrasera)
+            float distanciaReal = Vector2.Distance(transform.position, col.transform.position);
+            
+            if (distanciaReal < distanciaMinima)
             {
-                if (distX < distanciaMinima)
-                {
-                    distanciaMinima = distX;
-                    masCercano = col.transform;
-                }
+                distanciaMinima = distanciaReal;
+                masCercano = col.transform;
             }
         }
 
-        if (masCercano != null)
+        return masCercano;
+    }
+
+    void IntentarDetectarJugador()
+    {
+        Transform objetivoPotencial = BuscarJugador();
+        
+        if (objetivoPotencial != null)
         {
-            objetivoActual = masCercano;
+            objetivoActual = objetivoPotencial;
             objetivoFueraDeRango = false;
             CambiarEstado(Estado.Perseguir);
         }
@@ -223,6 +245,13 @@ public class IAEnemigo : MonoBehaviour
 
     void Perseguir()
     {
+        // Re-evaluar dinámicamente si hay otro jugador más cerca mientras persigue
+        Transform objetivoMasCercanoAhora = BuscarJugador();
+        if (objetivoMasCercanoAhora != null)
+        {
+            objetivoActual = objetivoMasCercanoAhora;
+        }
+
         if (objetivoActual == null)
         {
             CambiarEstado(Estado.Patrullar);
@@ -230,9 +259,24 @@ public class IAEnemigo : MonoBehaviour
         }
 
         float distancia = Vector2.Distance(transform.position, objetivoActual.position);
+        float distX = Mathf.Abs(objetivoActual.position.x - transform.position.x);
+        
+        // Calculamos la distancia vertical
+        float centroDY = transform.position.y + offsetYDeteccion;
+        float distY = Mathf.Abs(objetivoActual.position.y - centroDY);
+
+        // Tolerancia vertical con un levísimo margen (0.2f) para evitar parpadeos si el jugador está justo en el borde de la caja
+        if (distY > (alturaDeteccion + 0.2f))
+        {
+            objetivoActual = null;
+            CambiarEstado(Estado.Patrullar);
+            return;
+        }
 
         // ¿Está en rango de ataque?
-        if (distancia <= rangoAtaque)
+        // Usamos SOLO la distancia horizontal. La distancia vertical ya está validada arriba en esta misma función.
+        // Si usamos dist Y, la diferencia entre los pies del jugador y el centro del enemigo arruina el ataque.
+        if (distX <= rangoAtaque)
         {
             if (Time.time - tiempoUltimoAtaque >= cooldownAtaque)
             {
@@ -241,11 +285,11 @@ public class IAEnemigo : MonoBehaviour
             }
         }
 
-        // ¿Perdimos al objetivo?
+        // ¿Perdimos al objetivo horizontalmente?
         float dirHaciaJugador = objetivoActual.position.x - transform.position.x;
         bool estaDelante = (dirHaciaJugador * direccion) > 0;
 
-        if (distancia > rangoDeteccion && !(distancia <= rangoDeteccionTrasera))
+        if ((estaDelante && distX > rangoDeteccion) || (!estaDelante && distX > rangoDeteccionTrasera))
         {
             if (!objetivoFueraDeRango)
             {
@@ -413,12 +457,12 @@ public class IAEnemigo : MonoBehaviour
 
         // Rango de detección frontal (solo hacia delante)
         Gizmos.color = Color.yellow;
-        Vector3 centroFrontal = transform.position + new Vector3(dir * rangoDeteccion / 2f, 0f, 0f);
+        Vector3 centroFrontal = transform.position + new Vector3(dir * rangoDeteccion / 2f, offsetYDeteccion, 0f);
         Gizmos.DrawWireCube(centroFrontal, new Vector3(rangoDeteccion, alturaDeteccion * 2f, 0f));
 
         // Rango de detección trasera (solo hacia atrás)
         Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
-        Vector3 centroTrasero = transform.position + new Vector3(-dir * rangoDeteccionTrasera / 2f + offsetDeteccionTrasera.x, offsetDeteccionTrasera.y, 0f);
+        Vector3 centroTrasero = transform.position + new Vector3(-dir * rangoDeteccionTrasera / 2f, offsetYDeteccion, 0f);
         Gizmos.DrawWireCube(centroTrasero, new Vector3(rangoDeteccionTrasera, alturaDeteccion * 2f, 0f));
 
         // Rango de ataque
