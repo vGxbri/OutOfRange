@@ -5,9 +5,9 @@ public class BlurPausa : MonoBehaviour
 {
     [Header("Configuración")]
     [Range(0f, 10f)]
-    public float intensidadBlur = 3f;
+    public float intensidadBlur = 4f;
     [Range(1, 4)]
-    public int pasadas = 2;
+    public int pasadas = 1;
 
     private Material materialBlur;
     private bool blurActivo = false;

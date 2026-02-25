@@ -1,0 +1,226 @@
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class MovimientoJugador : MonoBehaviour
+{
+    [Header("Configuración de Movimiento")]
+    public float velocidad = 1.2f;
+    public float fuerzaSalto = 4.2f;
+
+    [Header("Detección de Suelo")]
+    public Transform detectorSuelo;
+    public Vector2 tamañoCajaDeteccion = new Vector2(0.2f, 0.05f);
+    public LayerMask capaSuelo;
+
+    [Header("Ajustes de Combate")]
+    public float tiempoCargaNecesario = 0.3f;
+    public float tiempoBloqueoHit = 0.2f;
+
+    [Header("Efectos Visuales")]
+    public Animator animatorCarga;
+
+    [Header("Configuración de Dash")]
+    public bool tieneDash;
+    public float velocidadDash = 10f;
+    public float duracionDash = 0.2f;
+
+    // Componentes
+    private Rigidbody2D rb;
+    private Animator animator;
+    private SpriteRenderer spriteRenderer;
+    private Camera camaraPrincipal;
+
+    // Variables de estado
+    private Vector2 inputMovimiento;
+    private bool tocandoSuelo;
+    private float tiempoCoyote = 0.15f;
+    private float contadorCoyote;
+    private bool estaMuerto = false;
+    private float tiempoPresionado;
+    private bool bloqueadoPorAtaque = false;
+    private bool bloqueadoPorHit = false;
+    private bool estaDasheando = false;
+    private float mitadAnchoJugador;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // Referencia a la cámara y cálculo de bordes del sprite
+        camaraPrincipal = Camera.main;
+        if (spriteRenderer != null)
+        {
+            mitadAnchoJugador = spriteRenderer.bounds.extents.x;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        // 1. GESTIÓN DE BLOQUEOS
+        if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit || estaDasheando)
+        {
+            if (!estaDasheando) rb.velocity = new Vector2(0, rb.velocity.y);
+            animator.SetFloat("VelocidadVertical", rb.velocity.y);
+            return;
+        }
+
+        // 2. DETECCIÓN DE SUELO
+        tocandoSuelo = Physics2D.OverlapBox(detectorSuelo.position, tamañoCajaDeteccion, 0f, capaSuelo);
+
+        // 3. LÓGICA DE COYOTE TIME
+        if (tocandoSuelo) contadorCoyote = tiempoCoyote;
+        else contadorCoyote -= Time.fixedDeltaTime;
+
+        // 4. GRAVEDAD DINÁMICA
+        if (!estaDasheando)
+        {
+            rb.gravityScale = (rb.velocity.y < 0) ? 1.2f : 0.7f;
+        }
+
+        // 5. MOVIMIENTO HORIZONTAL
+        rb.velocity = new Vector2(inputMovimiento.x * velocidad, rb.velocity.y);
+
+        // 6. ACTUALIZAR ANIMATOR
+        animator.SetBool("enSuelo", tocandoSuelo);
+        animator.SetFloat("Velocidad", Mathf.Abs(inputMovimiento.x));
+        animator.SetFloat("VelocidadVertical", rb.velocity.y);
+
+        // 7. GIRAR SPRITE
+        if (inputMovimiento.x > 0) spriteRenderer.flipX = false;
+        else if (inputMovimiento.x < 0) spriteRenderer.flipX = true;
+    }
+
+    void LateUpdate()
+    {
+        // --- RESTRICCIÓN DE PANTALLA ---
+        // Evita que el jugador salga de los bordes izquierdo/derecho de la cámara
+        if (!estaMuerto && camaraPrincipal != null)
+        {
+            float limiteIzquierdo = camaraPrincipal.ViewportToWorldPoint(new Vector3(0, 0, 0)).x;
+            float limiteDerecho = camaraPrincipal.ViewportToWorldPoint(new Vector3(1, 0, 0)).x;
+
+            float xClamped = Mathf.Clamp(transform.position.x, limiteIzquierdo + mitadAnchoJugador, limiteDerecho - mitadAnchoJugador);
+
+            if (xClamped != transform.position.x)
+            {
+                transform.position = new Vector3(xClamped, transform.position.y, transform.position.z);
+                if (estaDasheando) rb.velocity = new Vector2(0, rb.velocity.y);
+            }
+        }
+    }
+
+    // --- ENTRADAS DE CONTROL (INPUT SYSTEM) ---
+
+    public void AlMover(InputAction.CallbackContext context)
+    {
+        inputMovimiento = context.ReadValue<Vector2>();
+    }
+
+    public void AlSaltar(InputAction.CallbackContext context)
+    {
+        if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit) return;
+
+        if (context.performed && contadorCoyote > 0)
+        {
+            rb.velocity = new Vector2(rb.velocity.x, fuerzaSalto);
+            animator.SetTrigger("Saltar");
+            contadorCoyote = -0.5f;
+        }
+    }
+
+    public void AlAtacar(InputAction.CallbackContext context)
+    {
+        if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit) return;
+
+        if (context.started)
+        {
+            tiempoPresionado = Time.time;
+            animatorCarga.SetBool("isCharging", true);
+            animatorCarga.speed = 1f / tiempoCargaNecesario;
+        }
+
+        if (context.canceled)
+        {
+            float duracionFinal = Time.time - tiempoPresionado;
+            animatorCarga.SetBool("isCharging", false);
+            animatorCarga.speed = 1f;
+
+            if (duracionFinal >= tiempoCargaNecesario)
+            {
+                if (tieneDash) StartCoroutine(SecuenciaDash());
+                else StartCoroutine(SecuenciaAtaquePesado());
+            }
+            else
+            {
+                animator.SetTrigger("Atacar");
+            }
+        }
+    }
+
+    // --- CORRUTINAS ---
+
+    IEnumerator SecuenciaAtaquePesado()
+    {
+        bloqueadoPorAtaque = true;
+        rb.velocity = new Vector2(0, rb.velocity.y);
+        animator.SetTrigger("Atacar2");
+        yield return new WaitForSeconds(0.3f);
+        GetComponent<AtaqueJugador>().EjecutarAtaquePesado();
+        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.3f);
+        bloqueadoPorAtaque = false;
+    }
+
+    IEnumerator SecuenciaDash()
+    {
+        estaDasheando = true;
+        float gravedadOriginal = rb.gravityScale;
+        rb.gravityScale = 0;
+
+        float direccion = spriteRenderer.flipX ? -1f : 1f;
+        rb.velocity = new Vector2(direccion * velocidadDash, 0);
+
+        animator.SetTrigger("Dash");
+        yield return new WaitForSeconds(duracionDash);
+
+        rb.velocity = Vector2.zero;
+        rb.gravityScale = gravedadOriginal;
+        estaDasheando = false;
+    }
+
+    IEnumerator SecuenciaHit()
+    {
+        bloqueadoPorHit = true;
+        animator.SetTrigger("Recibir_Hit");
+        yield return new WaitForSeconds(tiempoBloqueoHit);
+        bloqueadoPorHit = false;
+    }
+
+    // --- FUNCIONES PÚBLICAS ---
+
+    public void RecibirHit()
+    {
+        if (estaMuerto || bloqueadoPorHit) return;
+        StartCoroutine(SecuenciaHit());
+    }
+
+    public void Morir()
+    {
+        if (estaMuerto) return;
+        estaMuerto = true;
+        animator.SetTrigger("Morir");
+        rb.velocity = Vector2.zero;
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (detectorSuelo != null)
+        {
+            Gizmos.color = tocandoSuelo ? Color.green : Color.red;
+            Gizmos.DrawWireCube(detectorSuelo.position, tamañoCajaDeteccion);
+        }
+    }
+}
