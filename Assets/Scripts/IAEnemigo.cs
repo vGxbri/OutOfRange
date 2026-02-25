@@ -73,6 +73,9 @@ public class IAEnemigo : MonoBehaviour
             matSinFriccion.bounciness = 0f;
             col.sharedMaterial = matSinFriccion;
         }
+
+        // Los enemigos no colisionan entre sí
+        Physics2D.IgnoreLayerCollision(gameObject.layer, gameObject.layer, true);
     }
 
     private float ultimoGiroColision;
@@ -83,35 +86,23 @@ public class IAEnemigo : MonoBehaviour
         if (Time.time - ultimoGiroColision < 0.5f) return;
 
         bool esPared = ((1 << colision.gameObject.layer) & capaSuelo) != 0;
-        IAEnemigo otroEnemigo = colision.collider.GetComponent<IAEnemigo>();
 
-        if (esPared || otroEnemigo != null)
+        if (esPared)
         {
             foreach (ContactPoint2D contacto in colision.contacts)
             {
                 if (Mathf.Abs(contacto.normal.x) > 0.5f)
                 {
-                    GirarPorColision();
-
-                    // Forzar que el otro enemigo también gire
-                    if (otroEnemigo != null)
-                        otroEnemigo.GirarPorColision();
-
+                    Girar();
+                    ultimoGiroColision = Time.time;
+                    if (estadoActual == Estado.Perseguir)
+                    {
+                        objetivoActual = null;
+                        CambiarEstado(Estado.Patrullar);
+                    }
                     break;
                 }
             }
-        }
-    }
-
-    public void GirarPorColision()
-    {
-        if (Time.time - ultimoGiroColision < 0.5f) return;
-        Girar();
-        ultimoGiroColision = Time.time;
-        if (estadoActual == Estado.Perseguir)
-        {
-            objetivoActual = null;
-            CambiarEstado(Estado.Patrullar);
         }
     }
 

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class ControladorZona : MonoBehaviour
 {
@@ -272,21 +273,56 @@ public class ControladorZona : MonoBehaviour
     }
 
 
+    // --- LÓGICA DE DAÑO FUERA DE ZONA ---
+    [Header("Daño Fuera de Zona")]
+    public float primerDañoDelay = 0.5f;
+    public float intervaloDaño = 1.5f;
+    public int dañoPorTick = 1;
 
-    /*
-    // --- LÓGICA DE MUERTE ---
+    private bool victimaFuera = false;
+    private Coroutine corrutinaDaño;
+
     private void OnTriggerExit2D(Collider2D other)
     {
-        // Si todavía no se ha configurado la partida, ignorar
+        if (!gameObject.activeInHierarchy) return;
         if (jugadorVictima == null) return;
+        if (other.gameObject != jugadorVictima) return;
 
-        // Si lo que sale es LA VÍCTIMA (y no el dueño ni una pared)
-        if (other.gameObject == jugadorVictima)
+        victimaFuera = true;
+        if (corrutinaDaño == null)
+            corrutinaDaño = StartCoroutine(DañoFueraDeZona());
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (jugadorVictima == null) return;
+        if (other.gameObject != jugadorVictima) return;
+
+        victimaFuera = false;
+        if (corrutinaDaño != null)
         {
-            Debug.Log("¡El jugador ha salido de la zona! Muriendo...");
-            Destroy(jugadorVictima); 
-            // Aquí luego pondrás tu lógica de Fin de Partida
+            StopCoroutine(corrutinaDaño);
+            corrutinaDaño = null;
         }
     }
-    */
+
+    IEnumerator DañoFueraDeZona()
+    {
+        // Primer daño rápido (500ms)
+        yield return new WaitForSeconds(primerDañoDelay);
+
+        while (victimaFuera)
+        {
+            if (VidaCompartida.Instancia != null)
+                VidaCompartida.Instancia.RecibirDaño(dañoPorTick);
+
+            // Hit visual en la víctima
+            MovimientoJugador mov = jugadorVictima.GetComponent<MovimientoJugador>();
+            if (mov != null) mov.RecibirHit();
+
+            yield return new WaitForSeconds(intervaloDaño);
+        }
+
+        corrutinaDaño = null;
+    }
 }

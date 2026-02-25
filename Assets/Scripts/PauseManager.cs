@@ -8,24 +8,27 @@ public class PauseManager : MonoBehaviour
     [Header("Contenedores")]
     public GameObject contenedorPausa;
     public GameObject contenedorControles;
+    public GameObject contenedorOpciones;
 
     [Header("Primer botón seleccionado (para mando)")]
     public GameObject primerBotonPausa;
     public GameObject primerBotonControles;
+    public GameObject primerBotonOpciones;
 
     [Header("Transición")]
     public TransitionSettings transicion;
 
     private bool enPausa = false;
-    private bool enControles = false;
+    private bool enSubMenu = false;
     private BlurPausa blur;
 
     void Start()
     {
         if (contenedorPausa != null) contenedorPausa.SetActive(false);
         if (contenedorControles != null) contenedorControles.SetActive(false);
+        if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
         enPausa = false;
-        enControles = false;
+        enSubMenu = false;
 
         Camera cam = Camera.main;
         if (cam != null) blur = cam.GetComponent<BlurPausa>();
@@ -35,7 +38,7 @@ public class PauseManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton7))
         {
-            if (enControles) VolverAPausa();
+            if (enSubMenu) VolverAPausa();
             else if (enPausa) Reanudar();
             else Pausar();
         }
@@ -62,15 +65,24 @@ public class PauseManager : MonoBehaviour
     {
         if (contenedorPausa != null) contenedorPausa.SetActive(false);
         if (contenedorControles != null) contenedorControles.SetActive(true);
-        enControles = true;
+        enSubMenu = true;
         SeleccionarBoton(primerBotonControles);
+    }
+
+    public void MostrarOpciones()
+    {
+        if (contenedorPausa != null) contenedorPausa.SetActive(false);
+        if (contenedorOpciones != null) contenedorOpciones.SetActive(true);
+        enSubMenu = true;
+        SeleccionarBoton(primerBotonOpciones);
     }
 
     public void VolverAPausa()
     {
         if (contenedorControles != null) contenedorControles.SetActive(false);
+        if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
         if (contenedorPausa != null) contenedorPausa.SetActive(true);
-        enControles = false;
+        enSubMenu = false;
         SeleccionarBoton(primerBotonPausa);
     }
 
