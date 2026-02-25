@@ -154,7 +154,8 @@ MonoBehaviour:
   velocidadRetroceso: 0.9
   rangoDeteccion: 1
   rangoDeteccionTrasera: 0.3
-  rangoAtaque: 0.2
+  rangoAtaque: 0.16
+  offsetAtaque: {x: -0.03, y: 0}
   capaJugador:
     serializedVersion: 2
     m_Bits: 128

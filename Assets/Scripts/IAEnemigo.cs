@@ -13,6 +13,7 @@ public class IAEnemigo : MonoBehaviour
     public float rangoDeteccion = 5f;
     public float rangoDeteccionTrasera = 1.5f;
     public float rangoAtaque = 1.2f;
+    public Vector2 offsetAtaque = Vector2.zero;
     public LayerMask capaJugador;
 
     [Header("Patrulla")]
@@ -291,8 +292,11 @@ public class IAEnemigo : MonoBehaviour
 
         if (animator != null) animator.SetTrigger("Attack");
 
+        // Calcular posición de ataque con offset
+        Vector2 posAtaque = (Vector2)transform.position + offsetAtaque;
+
         // Detectar y dañar jugadores en rango de ataque
-        Collider2D[] jugadores = Physics2D.OverlapCircleAll(transform.position, rangoAtaque, capaJugador);
+        Collider2D[] jugadores = Physics2D.OverlapCircleAll(posAtaque, rangoAtaque, capaJugador);
         foreach (var col in jugadores)
         {
             // Daño compartido
@@ -353,6 +357,7 @@ public class IAEnemigo : MonoBehaviour
     void Girar()
     {
         direccion *= -1;
+        offsetAtaque.x = -offsetAtaque.x;
     }
 
     void ActualizarDireccionVisual()
@@ -389,7 +394,8 @@ public class IAEnemigo : MonoBehaviour
 
         // Rango de ataque
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, rangoAtaque);
+        Vector2 posAtaque = (Vector2)transform.position + offsetAtaque;
+        Gizmos.DrawWireSphere(posAtaque, rangoAtaque);
 
         // Detector de borde
         Gizmos.color = Color.green;
