@@ -12,6 +12,8 @@ public class IAEnemigo : MonoBehaviour
     [Header("Detección")]
     public float rangoDeteccion = 5f;
     public float rangoDeteccionTrasera = 1.5f;
+    public Vector2 offsetDeteccionTrasera = Vector2.zero;
+    public float alturaDeteccion = 1f;
     public float rangoAtaque = 1.2f;
     public Vector2 offsetAtaque = Vector2.zero;
     public LayerMask capaJugador;
@@ -46,6 +48,7 @@ public class IAEnemigo : MonoBehaviour
     private Estado estadoActual = Estado.Patrullar;
     private Rigidbody2D rb;
     private Animator animator;
+    private CapsuleCollider2D capsuleCollider;
     private int direccion = 1;
     private Transform objetivoActual;
 
@@ -55,10 +58,15 @@ public class IAEnemigo : MonoBehaviour
     private float tiempoPerdiendoObjetivo;
     private bool objetivoFueraDeRango = false;
 
+    // Cooldown global de giro para evitar oscilación en espacios reducidos
+    private const float COOLDOWN_GIRO = 0.6f;
+    private float tiempoUltimoGiro;
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        capsuleCollider = GetComponent<CapsuleCollider2D>();
         tiempoUltimoAtaque = -cooldownAtaque;
         timerEstado = VariarTiempo(Random.Range(tiempoCaminarMin, tiempoCaminarMax));
 
@@ -79,12 +87,9 @@ public class IAEnemigo : MonoBehaviour
         Physics2D.IgnoreLayerCollision(gameObject.layer, gameObject.layer, true);
     }
 
-    private float ultimoGiroColision;
-
     void OnCollisionEnter2D(Collision2D colision)
     {
         if (colision.collider.CompareTag("Player")) return;
-        if (Time.time - ultimoGiroColision < 0.5f) return;
 
         bool esPared = ((1 << colision.gameObject.layer) & capaSuelo) != 0;
 
@@ -94,12 +99,13 @@ public class IAEnemigo : MonoBehaviour
             {
                 if (Mathf.Abs(contacto.normal.x) > 0.5f)
                 {
-                    Girar();
-                    ultimoGiroColision = Time.time;
-                    if (estadoActual == Estado.Perseguir)
+                    if (IntentarGirar())
                     {
-                        objetivoActual = null;
-                        CambiarEstado(Estado.Patrullar);
+                        if (estadoActual == Estado.Perseguir)
+                        {
+                            objetivoActual = null;
+                            CambiarEstado(Estado.Patrullar);
+                        }
                     }
                     break;
                 }
@@ -138,8 +144,7 @@ public class IAEnemigo : MonoBehaviour
                 rb.velocity = new Vector2(0, rb.velocity.y);
                 if (Time.time >= timerEstado)
                 {
-                    // A veces gira al reanudar la patrulla
-                    if (Random.value < 0.3f) Girar();
+                    if (Random.value < 0.3f) IntentarGirar();
                     CambiarEstado(Estado.Patrullar);
                 }
                 BuscarJugador();
@@ -163,23 +168,25 @@ public class IAEnemigo : MonoBehaviour
 
     void BuscarJugador()
     {
-        Collider2D[] jugadores = Physics2D.OverlapCircleAll(transform.position, rangoDeteccion, capaJugador);
+        // Detección rectangular: ancho = rango de detección, alto = alturaDeteccion
+        Vector2 tamañoCaja = new Vector2(rangoDeteccion * 2f, alturaDeteccion * 2f);
+        Collider2D[] jugadores = Physics2D.OverlapBoxAll(transform.position, tamañoCaja, 0f, capaJugador);
 
         float distanciaMinima = float.MaxValue;
         Transform masCercano = null;
 
         foreach (var col in jugadores)
         {
-            float dist = Vector2.Distance(transform.position, col.transform.position);
+            float distX = Mathf.Abs(col.transform.position.x - transform.position.x);
             float dirHaciaJugador = col.transform.position.x - transform.position.x;
             bool estaDelante = (dirHaciaJugador * direccion) > 0;
 
             // Detección direccional: rango completo delante, rango reducido detrás
-            if (estaDelante || dist <= rangoDeteccionTrasera)
+            if (estaDelante || distX <= rangoDeteccionTrasera)
             {
-                if (dist < distanciaMinima)
+                if (distX < distanciaMinima)
                 {
-                    distanciaMinima = dist;
+                    distanciaMinima = distX;
                     masCercano = col.transform;
                 }
             }
@@ -195,14 +202,18 @@ public class IAEnemigo : MonoBehaviour
 
     void Patrullar()
     {
-        // Detectar borde de plataforma
         Vector2 posicionBorde = (Vector2)transform.position + new Vector2(direccion * distanciaDeteccionPared, 0);
         RaycastHit2D hitSuelo = Physics2D.Raycast(posicionBorde, Vector2.down, distanciaDeteccionBorde, capaSuelo);
         RaycastHit2D hitPared = Physics2D.Raycast(transform.position, Vector2.right * direccion, distanciaDeteccionPared, capaSuelo);
 
         if (!hitSuelo.collider || hitPared.collider)
         {
-            Girar();
+            if (!IntentarGirar())
+            {
+                // No puede girar (cooldown activo) → está en un espacio reducido, esperar
+                CambiarEstado(Estado.IdlePatrulla);
+                return;
+            }
         }
 
         rb.velocity = new Vector2(direccion * velocidadPatrulla, rb.velocity.y);
@@ -266,12 +277,11 @@ public class IAEnemigo : MonoBehaviour
         if (!hitSuelo.collider || hitPared.collider)
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
-            // Si hay pared, dejar de perseguir
             if (hitPared.collider)
             {
                 objetivoActual = null;
+                IntentarGirar();
                 CambiarEstado(Estado.Patrullar);
-                Girar();
                 return;
             }
         }
@@ -354,16 +364,31 @@ public class IAEnemigo : MonoBehaviour
         }
     }
 
-    void Girar()
+    /// Intenta girar respetando el cooldown global. Devuelve true si giró.
+    bool IntentarGirar()
     {
+        if (Time.time - tiempoUltimoGiro < COOLDOWN_GIRO)
+            return false;
+
         direccion *= -1;
         offsetAtaque.x = -offsetAtaque.x;
+        tiempoUltimoGiro = Time.time;
+        return true;
     }
 
     void ActualizarDireccionVisual()
     {
+        float escalaObjetivo = Mathf.Abs(transform.localScale.x) * direccion;
+
+        // Compensar posición solo cuando realmente cambia la dirección
+        if (Mathf.Sign(transform.localScale.x) != Mathf.Sign(escalaObjetivo) && capsuleCollider != null)
+        {
+            float compensacion = 2f * capsuleCollider.offset.x * transform.localScale.x;
+            transform.position += new Vector3(compensacion, 0f, 0f);
+        }
+
         Vector3 escala = transform.localScale;
-        escala.x = Mathf.Abs(escala.x) * direccion;
+        escala.x = escalaObjetivo;
         transform.localScale = escala;
     }
 
@@ -384,13 +409,17 @@ public class IAEnemigo : MonoBehaviour
 
     void OnDrawGizmosSelected()
     {
-        // Rango de detección frontal
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, rangoDeteccion);
+        float dir = Application.isPlaying ? direccion : (transform.localScale.x > 0 ? 1f : -1f);
 
-        // Rango de detección trasera
+        // Rango de detección frontal (solo hacia delante)
+        Gizmos.color = Color.yellow;
+        Vector3 centroFrontal = transform.position + new Vector3(dir * rangoDeteccion / 2f, 0f, 0f);
+        Gizmos.DrawWireCube(centroFrontal, new Vector3(rangoDeteccion, alturaDeteccion * 2f, 0f));
+
+        // Rango de detección trasera (solo hacia atrás)
         Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
-        Gizmos.DrawWireSphere(transform.position, rangoDeteccionTrasera);
+        Vector3 centroTrasero = transform.position + new Vector3(-dir * rangoDeteccionTrasera / 2f + offsetDeteccionTrasera.x, offsetDeteccionTrasera.y, 0f);
+        Gizmos.DrawWireCube(centroTrasero, new Vector3(rangoDeteccionTrasera, alturaDeteccion * 2f, 0f));
 
         // Rango de ataque
         Gizmos.color = Color.red;
@@ -399,7 +428,6 @@ public class IAEnemigo : MonoBehaviour
 
         // Detector de borde
         Gizmos.color = Color.green;
-        float dir = transform.localScale.x > 0 ? 1 : -1;
         Vector2 posicionBorde = (Vector2)transform.position + new Vector2(dir * distanciaDeteccionPared, 0);
         Gizmos.DrawLine(posicionBorde, posicionBorde + Vector2.down * distanciaDeteccionBorde);
     }

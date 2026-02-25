@@ -152,15 +152,17 @@ MonoBehaviour:
   velocidadPatrulla: 0.2
   velocidadPersecucion: 0.35
   velocidadRetroceso: 0.9
-  rangoDeteccion: 1
+  rangoDeteccion: 0.75
   rangoDeteccionTrasera: 0.3
+  offsetDeteccionTrasera: {x: 0, y: 0}
+  alturaDeteccion: 0.05
   rangoAtaque: 0.16
   offsetAtaque: {x: -0.03, y: 0}
   capaJugador:
     serializedVersion: 2
     m_Bits: 128
   distanciaDeteccionBorde: 0.5
-  distanciaDeteccionPared: 0.3
+  distanciaDeteccionPared: 0.05
   capaSuelo:
     serializedVersion: 2
     m_Bits: 64
