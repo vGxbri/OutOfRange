@@ -18,13 +18,14 @@ public class CameraFollow : MonoBehaviour
 
     private Camera cam;
     private float initialZ;
+    private bool primeraVez = true;
 
     void Start()
     {
         cam = GetComponent<Camera>();
         initialZ = transform.position.z;
 
-        // Intento inicial de buscar jugadores si ya est�n en la escena
+        // Intento inicial de buscar jugadores si ya están en la escena
         EncontrarJugadores();
     }
 
@@ -43,19 +44,27 @@ public class CameraFollow : MonoBehaviour
         Vector3 centerPoint = GetCenterPoint();
         Vector3 targetPos = centerPoint + (Vector3)offset;
 
-        // 2. L�mites de la c�mara
+        // 2. Límites de la cámara
         float camHeight = cam.orthographicSize;
         float camWidth = camHeight * cam.aspect;
 
-        // IMPORTANTE: Si maxWidth es muy peque�o, el Clamp puede bloquear la c�mara.
-        // Aseg�rate de que (maxWidth - minWidth) sea mayor que el ancho de la c�mara.
+        // IMPORTANTE: Si maxWidth es muy pequeño, el Clamp puede bloquear la cámara.
+        // Asegúrate de que (maxWidth - minWidth) sea mayor que el ancho de la cámara.
         float clampedX = Mathf.Clamp(targetPos.x, minWidth + camWidth, maxWidth - camWidth);
         float clampedY = Mathf.Clamp(targetPos.y, minHeight + camHeight, maxHeight - camHeight);
 
         Vector3 finalPosition = new Vector3(clampedX, clampedY, initialZ);
 
         // 3. Movimiento
-        transform.position = Vector3.Lerp(transform.position, finalPosition, smoothSpeed * Time.deltaTime);
+        if (primeraVez)
+        {
+            transform.position = finalPosition;
+            primeraVez = false;
+        }
+        else
+        {
+            transform.position = Vector3.Lerp(transform.position, finalPosition, smoothSpeed * Time.deltaTime);
+        }
     }
 
     private void EncontrarJugadores()
@@ -85,5 +94,18 @@ public class CameraFollow : MonoBehaviour
         {
             targets.Add(newTarget);
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // Dibujar una caja roja para visualizar los límites en los que se puede mover la cámara (su centro)
+        Gizmos.color = Color.red;
+        
+        // El ancho total jugable es (maxWidth - minWidth) y la altura es (maxHeight - minHeight)
+        float width = maxWidth - minWidth;
+        float height = maxHeight - minHeight;
+        Vector3 center = new Vector3(minWidth + (width / 2f), minHeight + (height / 2f), transform.position.z);
+        
+        Gizmos.DrawWireCube(center, new Vector3(width, height, 0));
     }
 }

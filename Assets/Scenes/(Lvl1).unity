@@ -6286,7 +6286,7 @@ MonoBehaviour:
   smoothSpeed: 10
   offset: {x: 0, y: 0}
   minWidth: -2
-  maxWidth: 19
+  maxWidth: 18.4
   minHeight: -0.7
   maxHeight: 1.25
 --- !u!114 &966684916

@@ -6672,9 +6672,9 @@ MonoBehaviour:
   smoothSpeed: 10
   offset: {x: 0, y: 0}
   minWidth: -2
-  maxWidth: 19
+  maxWidth: 18.3
   minHeight: -0.7
-  maxHeight: 1.25
+  maxHeight: 1.41
 --- !u!114 &966684916
 MonoBehaviour:
   m_ObjectHideFlags: 0
