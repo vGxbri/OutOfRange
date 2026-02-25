@@ -225,3 +225,6 @@ MonoBehaviour:
   espacioGuion: 1
   nombreCapaOrden: Zona Jugador
   ordenCapa: 10
+  "primerDa\xF1oDelay": 0.5
+  "intervaloDa\xF1o": 2
+  "da\xF1oPorTick": 1
