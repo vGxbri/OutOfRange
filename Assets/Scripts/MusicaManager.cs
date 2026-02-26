@@ -105,4 +105,16 @@ public class MusicManager : MonoBehaviour
             yield return null;
         }
     }
+    void Update()
+    {
+        // Obtenemos el nombre de la escena que se está viendo ahora mismo
+        string nombreEscena = SceneManager.GetActiveScene().name;
+
+        // Si la escena es Nivel1 pero la música que suena no es la del Nivel 1... ¡Cámbiala!
+        if (nombreEscena == "Nivel1" && audioSource.clip != musicaNivel1)
+        {
+            StartCoroutine(CambiarMusicaSuave(musicaNivel1));
+        }
+        // Repite esto para los demás niveles importantes si ves que fallan
+    }
 }
