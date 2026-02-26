@@ -500,7 +500,7 @@ GameObject:
   - component: {fileID: 90818819}
   m_Layer: 6
   m_Name: decorative_obj_6 (8)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -734,7 +734,7 @@ GameObject:
   - component: {fileID: 108553217}
   m_Layer: 6
   m_Name: decorative_obj_6 (9)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -977,7 +977,7 @@ GameObject:
   - component: {fileID: 115998243}
   m_Layer: 6
   m_Name: decorative_obj_6 (26)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1126,7 +1126,7 @@ GameObject:
   - component: {fileID: 140117304}
   m_Layer: 6
   m_Name: env_ground_17 (4)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1345,7 +1345,7 @@ GameObject:
   - component: {fileID: 155094616}
   m_Layer: 6
   m_Name: env_ground_17 (3)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1492,7 +1492,7 @@ GameObject:
   - component: {fileID: 236273176}
   m_Layer: 6
   m_Name: env_ground_17 (4)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1623,7 +1623,7 @@ GameObject:
   - component: {fileID: 245157239}
   m_Layer: 6
   m_Name: decorative_obj_6 (40)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2120,7 +2120,7 @@ GameObject:
   - component: {fileID: 315054592}
   m_Layer: 6
   m_Name: env_ground_17
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2252,7 +2252,7 @@ GameObject:
   - component: {fileID: 318369227}
   m_Layer: 6
   m_Name: decorative_obj_6 (6)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2401,7 +2401,7 @@ GameObject:
   - component: {fileID: 331385881}
   m_Layer: 6
   m_Name: env_ground_17 (2)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2532,7 +2532,7 @@ GameObject:
   - component: {fileID: 333924033}
   m_Layer: 6
   m_Name: env_ground_17 (1)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2695,7 +2695,7 @@ GameObject:
   - component: {fileID: 374161201}
   m_Layer: 6
   m_Name: decorative_obj_6 (14)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2928,7 +2928,7 @@ GameObject:
   - component: {fileID: 395839073}
   m_Layer: 6
   m_Name: env_ground_17 (4)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3484,7 +3484,7 @@ GameObject:
   - component: {fileID: 475884077}
   m_Layer: 6
   m_Name: env_ground_17
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3616,7 +3616,7 @@ GameObject:
   - component: {fileID: 485500696}
   m_Layer: 6
   m_Name: decorative_obj_6 (21)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3766,7 +3766,7 @@ GameObject:
   - component: {fileID: 494328282}
   m_Layer: 6
   m_Name: decorative_obj_6 (39)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4174,7 +4174,7 @@ GameObject:
   - component: {fileID: 570656094}
   m_Layer: 6
   m_Name: decorative_obj_6 (31)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4324,7 +4324,7 @@ GameObject:
   - component: {fileID: 593132951}
   m_Layer: 6
   m_Name: decorative_obj_6 (18)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4473,7 +4473,7 @@ GameObject:
   - component: {fileID: 596876479}
   m_Layer: 6
   m_Name: env_ground_17 (2)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4667,7 +4667,7 @@ GameObject:
   - component: {fileID: 610579178}
   m_Layer: 6
   m_Name: decorative_obj_6 (3)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4848,7 +4848,7 @@ GameObject:
   - component: {fileID: 687178058}
   m_Layer: 6
   m_Name: decorative_obj_6 (24)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5311,6 +5311,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3078617716500674939, guid: ebb9560276cea914d8f3bc9d4c71529c, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3078617716500674939, guid: ebb9560276cea914d8f3bc9d4c71529c, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4450910606549242363, guid: ebb9560276cea914d8f3bc9d4c71529c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5351,6 +5359,14 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1232538978}
+    - target: {fileID: 6076986530601322329, guid: ebb9560276cea914d8f3bc9d4c71529c, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6076986530601322329, guid: ebb9560276cea914d8f3bc9d4c71529c, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6141374987840920443, guid: ebb9560276cea914d8f3bc9d4c71529c, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -5616,7 +5632,7 @@ GameObject:
   - component: {fileID: 825407970}
   m_Layer: 6
   m_Name: decorative_obj_6 (41)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5765,7 +5781,7 @@ GameObject:
   - component: {fileID: 868154676}
   m_Layer: 6
   m_Name: Suelo (3)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6124,7 +6140,7 @@ GameObject:
   - component: {fileID: 912463994}
   m_Layer: 6
   m_Name: env_ground_17 (4)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6564,7 +6580,7 @@ GameObject:
   - component: {fileID: 993758561}
   m_Layer: 6
   m_Name: env_ground_17 (2)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6780,7 +6796,7 @@ GameObject:
   - component: {fileID: 1030736093}
   m_Layer: 6
   m_Name: decorative_obj_6 (10)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7044,7 +7060,7 @@ GameObject:
   - component: {fileID: 1041641782}
   m_Layer: 6
   m_Name: decorative_obj_6 (30)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7193,7 +7209,7 @@ GameObject:
   - component: {fileID: 1062573395}
   m_Layer: 6
   m_Name: env_ground_17 (2)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7325,7 +7341,7 @@ GameObject:
   - component: {fileID: 1063699376}
   m_Layer: 6
   m_Name: decorative_obj_6 (28)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7474,7 +7490,7 @@ GameObject:
   - component: {fileID: 1100036751}
   m_Layer: 6
   m_Name: env_ground_17 (1)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -7767,7 +7783,7 @@ GameObject:
   - component: {fileID: 1114515965}
   m_Layer: 6
   m_Name: decorative_obj_6 (25)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -8883,7 +8899,7 @@ GameObject:
   - component: {fileID: 1174886636}
   m_Layer: 6
   m_Name: env_ground_17
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9109,7 +9125,7 @@ GameObject:
   - component: {fileID: 1209385406}
   m_Layer: 6
   m_Name: decorative_obj_6 (43)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9258,7 +9274,7 @@ GameObject:
   - component: {fileID: 1210674396}
   m_Layer: 6
   m_Name: env_ground_17 (4)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9389,7 +9405,7 @@ GameObject:
   - component: {fileID: 1232276722}
   m_Layer: 6
   m_Name: decorative_obj_6 (32)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9588,7 +9604,7 @@ GameObject:
   - component: {fileID: 1233926097}
   m_Layer: 6
   m_Name: Suelo (4)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9911,7 +9927,7 @@ GameObject:
   - component: {fileID: 1249849877}
   m_Layer: 6
   m_Name: env_ground_17
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10042,7 +10058,7 @@ GameObject:
   - component: {fileID: 1275653126}
   m_Layer: 6
   m_Name: Suelo (2)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10235,7 +10251,7 @@ GameObject:
   - component: {fileID: 1319757148}
   m_Layer: 6
   m_Name: env_ground_17 (3)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10566,7 +10582,7 @@ GameObject:
   - component: {fileID: 1351402143}
   m_Layer: 6
   m_Name: env_ground_17 (1)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10734,7 +10750,7 @@ GameObject:
   - component: {fileID: 1377506437}
   m_Layer: 6
   m_Name: decorative_obj_6 (4)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10883,7 +10899,7 @@ GameObject:
   - component: {fileID: 1422955918}
   m_Layer: 6
   m_Name: env_ground_17 (2)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11145,7 +11161,7 @@ GameObject:
   - component: {fileID: 1456936484}
   m_Layer: 6
   m_Name: decorative_obj_6 (19)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11613,7 +11629,7 @@ GameObject:
   - component: {fileID: 1552346854}
   m_Layer: 6
   m_Name: decorative_obj_6 (23)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11763,7 +11779,7 @@ GameObject:
   - component: {fileID: 1553411802}
   m_Layer: 6
   m_Name: decorative_obj_6 (22)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12042,7 +12058,7 @@ GameObject:
   - component: {fileID: 1568089005}
   m_Layer: 6
   m_Name: env_ground_17 (3)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12353,7 +12369,7 @@ GameObject:
   - component: {fileID: 1582509772}
   m_Layer: 6
   m_Name: decorative_obj_6 (20)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12503,7 +12519,7 @@ GameObject:
   - component: {fileID: 1583500956}
   m_Layer: 6
   m_Name: decorative_obj_6 (5)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -12816,7 +12832,7 @@ GameObject:
   - component: {fileID: 1627763164}
   m_Layer: 6
   m_Name: env_ground_17
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13064,7 +13080,7 @@ GameObject:
   - component: {fileID: 1662564989}
   m_Layer: 6
   m_Name: decorative_obj_6 (33)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13374,7 +13390,7 @@ GameObject:
   - component: {fileID: 1711324074}
   m_Layer: 6
   m_Name: decorative_obj_6 (35)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13523,7 +13539,7 @@ GameObject:
   - component: {fileID: 1711578990}
   m_Layer: 6
   m_Name: env_ground_17 (3)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13747,7 +13763,7 @@ GameObject:
   - component: {fileID: 1736143296}
   m_Layer: 6
   m_Name: env_ground_17 (1)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -13909,7 +13925,7 @@ GameObject:
   - component: {fileID: 1745126010}
   m_Layer: 6
   m_Name: env_ground_17 (1)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14041,7 +14057,7 @@ GameObject:
   - component: {fileID: 1750863123}
   m_Layer: 6
   m_Name: decorative_obj_6 (38)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14191,7 +14207,7 @@ GameObject:
   - component: {fileID: 1758622516}
   m_Layer: 6
   m_Name: decorative_obj_6 (37)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14408,7 +14424,7 @@ GameObject:
   - component: {fileID: 1805986171}
   m_Layer: 6
   m_Name: decorative_obj_6 (12)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14711,7 +14727,7 @@ GameObject:
   - component: {fileID: 1873496037}
   m_Layer: 0
   m_Name: Suelos
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14750,7 +14766,7 @@ GameObject:
   - component: {fileID: 1887317623}
   m_Layer: 6
   m_Name: decorative_obj_6 (29)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -14899,7 +14915,7 @@ GameObject:
   - component: {fileID: 1888042892}
   m_Layer: 6
   m_Name: Suelo (1)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15518,7 +15534,7 @@ GameObject:
   - component: {fileID: 1954059953}
   m_Layer: 6
   m_Name: decorative_obj_6 (7)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15792,7 +15808,7 @@ GameObject:
   - component: {fileID: 1972907005}
   m_Layer: 6
   m_Name: decorative_obj_6 (36)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16114,7 +16130,7 @@ GameObject:
   - component: {fileID: 2013398710}
   m_Layer: 6
   m_Name: decorative_obj_6 (27)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16348,7 +16364,7 @@ GameObject:
   - component: {fileID: 2057290495}
   m_Layer: 6
   m_Name: decorative_obj_6 (34)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16498,7 +16514,7 @@ GameObject:
   - component: {fileID: 2108947480}
   m_Layer: 6
   m_Name: decorative_obj_6 (11)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16679,7 +16695,7 @@ GameObject:
   - component: {fileID: 2127704864}
   m_Layer: 6
   m_Name: decorative_obj_6 (42)
-  m_TagString: Untagged
+  m_TagString: Plataforma
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16828,7 +16844,7 @@ GameObject:
   - component: {fileID: 2128198227}
   m_Layer: 6
   m_Name: env_ground_17 (3)
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -16959,7 +16975,7 @@ GameObject:
   - component: {fileID: 2141390567}
   m_Layer: 6
   m_Name: Suelo
-  m_TagString: Untagged
+  m_TagString: Hierba
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler
+public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, ISelectHandler, IDeselectHandler, IPointerClickHandler, ISubmitHandler
 {
     [Header("Configuración")]
     public RectTransform lineaSubrayado;
@@ -14,6 +14,11 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
     public Color colorNormal = Color.white;
     public Color colorSeleccionado = Color.yellow;
 
+    [Header("Sonidos")]
+    public AudioSource audioSource;
+    public AudioClip sonidoHover;
+    public AudioClip sonidoClick;
+
     private float anchoObjetivo = 0f;
 
     void Start()
@@ -22,7 +27,6 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             lineaSubrayado.localScale = new Vector3(0, 1, 1);
 
-            // Garantizar altura mínima visible
             if (lineaSubrayado.sizeDelta.y < 4f)
             {
                 lineaSubrayado.sizeDelta = new Vector2(lineaSubrayado.sizeDelta.x, 4f);
@@ -30,6 +34,9 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
         }
 
         if (textoBoton != null) colorNormal = textoBoton.color;
+        
+        // Autocompletar AudioSource si no está asignado
+        if (audioSource == null) audioSource = GetComponent<AudioSource>();
     }
 
     void OnEnable()
@@ -71,15 +78,39 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
         DesactivarEfecto();
     }
 
+    // --- DETECTAR EL CLICK ---
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        ReproducirClick();
+    }
+
+    public void OnSubmit(BaseEventData eventData)
+    {
+        ReproducirClick();
+    }
+
     void ActivarEfecto()
     {
         anchoObjetivo = 1f;
         if (textoBoton != null) textoBoton.color = colorSeleccionado;
+        
+        if (audioSource != null && sonidoHover != null)
+        {
+            audioSource.PlayOneShot(sonidoHover);
+        }
     }
 
     void DesactivarEfecto()
     {
         anchoObjetivo = 0f;
         if (textoBoton != null) textoBoton.color = colorNormal;
+    }
+
+    void ReproducirClick()
+    {
+        if (audioSource != null && sonidoClick != null)
+        {
+            audioSource.PlayOneShot(sonidoClick);
+        }
     }
 }

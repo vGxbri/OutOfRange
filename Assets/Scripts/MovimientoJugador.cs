@@ -25,6 +25,17 @@ public class MovimientoJugador : MonoBehaviour
     public float velocidadDash = 10f;
     public float duracionDash = 0.2f;
 
+    [Header("Sonidos")]
+    public AudioSource audioS;
+    public AudioSource audioPasos; // Canal dedicado para pasos
+    public AudioClip sonidoSalto;
+    public AudioClip sonidoDash;
+    public AudioClip pasosHierba;
+    public AudioClip pasosPlataforma;
+    public float intervaloPasos = 0.3f;
+    private float contadorPasos;
+    private string tipoSueloActual = "Plataforma";
+
     // Componentes
     private Rigidbody2D rb;
     private Animator animator;
@@ -57,6 +68,18 @@ public class MovimientoJugador : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        // Si el juego se pausa (ej: tutorial), detenemos el sonido de los pasos inmediatamente
+        if (Time.timeScale == 0f)
+        {
+            if (audioPasos != null && audioPasos.isPlaying)
+            {
+                audioPasos.Stop();
+            }
+        }
+    }
+
     void FixedUpdate()
     {
         // 1. GESTIÓN DE BLOQUEOS
@@ -70,7 +93,14 @@ public class MovimientoJugador : MonoBehaviour
         // 2. DETECCIÓN DE SUELO (Solo detectamos suelo si no estamos subiendo)
         if (rb.velocity.y <= 0.1f)
         {
-            tocandoSuelo = Physics2D.OverlapBox(detectorSuelo.position, tamañoCajaDeteccion, 0f, capaSuelo);
+            Collider2D col = Physics2D.OverlapBox(detectorSuelo.position, tamañoCajaDeteccion, 0f, capaSuelo);
+            tocandoSuelo = col != null;
+
+            if (tocandoSuelo)
+            {
+                if (col.CompareTag("Hierba")) tipoSueloActual = "Hierba";
+                else tipoSueloActual = "Plataforma";
+            }
         }
         else
         {
@@ -99,12 +129,46 @@ public class MovimientoJugador : MonoBehaviour
         // 7. GIRAR SPRITE
         if (entradaActualX > 0) spriteRenderer.flipX = false;
         else if (entradaActualX < 0) spriteRenderer.flipX = true;
+
+        // --- LÓGICA DE PASOS MEJORADA ---
+        bool seEstaMoviendo = Mathf.Abs(rb.velocity.x) > 0.1f;
+
+        if (tocandoSuelo && seEstaMoviendo && !estaDasheando)
+        {
+            contadorPasos -= Time.fixedDeltaTime;
+            if (contadorPasos <= 0)
+            {
+                ReproducirSonidoPaso();
+                contadorPasos = intervaloPasos; 
+            }
+        }
+        else
+        {
+            // Ahora si paramos de andar, solo paramos el canal de pasos
+            if (audioPasos != null && audioPasos.isPlaying)
+            {
+                audioPasos.Stop();
+            }
+            contadorPasos = 0; 
+        }
+    }
+
+    private void ReproducirSonidoPaso()
+    {
+        AudioClip clipAElegir = (tipoSueloActual == "Hierba") ? pasosHierba : pasosPlataforma;
+        
+        if (audioPasos && clipAElegir)
+        {
+            // Usamos un canal independiente para que el Stop() no mate ataques/saltos
+            audioPasos.clip = clipAElegir;
+            audioPasos.pitch = Random.Range(0.9f, 1.1f);
+            audioPasos.Play();
+        }
     }
 
     void LateUpdate()
     {
         // --- RESTRICCIÓN DE PANTALLA ---
-        // Evita que el jugador salga de los bordes izquierdo/derecho de la cámara
         if (!estaMuerto && camaraPrincipal != null)
         {
             float limiteIzquierdo = camaraPrincipal.ViewportToWorldPoint(new Vector3(0, 0, 0)).x;
@@ -120,8 +184,6 @@ public class MovimientoJugador : MonoBehaviour
         }
     }
 
-    // --- ENTRADAS DE CONTROL (INPUT SYSTEM) ---
-
     public void AlMover(InputAction.CallbackContext context)
     {
         inputMovimiento = context.ReadValue<Vector2>();
@@ -136,6 +198,7 @@ public class MovimientoJugador : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, fuerzaSalto);
             animator.SetTrigger("Saltar");
             contadorCoyote = -0.5f;
+            if (audioS && sonidoSalto) audioS.PlayOneShot(sonidoSalto);
         }
     }
 
@@ -168,8 +231,6 @@ public class MovimientoJugador : MonoBehaviour
         }
     }
 
-    // --- CORRUTINAS ---
-
     IEnumerator SecuenciaAtaquePesado()
     {
         bloqueadoPorAtaque = true;
@@ -185,6 +246,7 @@ public class MovimientoJugador : MonoBehaviour
     IEnumerator SecuenciaDash()
     {
         estaDasheando = true;
+        if (audioS && sonidoDash) audioS.PlayOneShot(sonidoDash);
         float gravedadOriginal = rb.gravityScale;
         rb.gravityScale = 0;
 
@@ -206,8 +268,6 @@ public class MovimientoJugador : MonoBehaviour
         yield return new WaitForSeconds(tiempoBloqueoHit);
         bloqueadoPorHit = false;
     }
-
-    // --- FUNCIONES PÚBLICAS ---
 
     public void RecibirHit()
     {

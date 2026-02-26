@@ -10,6 +10,11 @@ public class AtaqueJugador : MonoBehaviour
     public float rangoAtaquePesado = 0.65f;
     public LayerMask capaEnemigos;
 
+    [Header("Sonidos")]
+    public AudioSource audioS;
+    public AudioClip ataqueBasico;
+    public AudioClip ataqueFuerte;
+
     private SpriteRenderer spriteRenderer;
 
     void Start()
@@ -20,11 +25,13 @@ public class AtaqueJugador : MonoBehaviour
     public void EjecutarAtaque()
     {
         Golpear(dañoAtaque, rangoAtaque);
+        audioS.PlayOneShot(ataqueBasico);
     }
 
     public void EjecutarAtaquePesado()
     {
         Golpear(dañoAtaquePesado, rangoAtaquePesado);
+        audioS.PlayOneShot(ataqueFuerte);
     }
 
     void Golpear(int daño, float rango)
