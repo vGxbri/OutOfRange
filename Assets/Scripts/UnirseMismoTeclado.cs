@@ -7,12 +7,19 @@ public class UnirseMismoTeclado : MonoBehaviour
     public GameObject prefabJugador1; 
     public GameObject prefabJugador2; 
 
+    [Header("UI Comienzo Nivel")]
+    public GameObject contenedorComienzoPartida;
+    public GameObject contenedorJ1;
+    public GameObject contenedorJ2;
+
     private PlayerInputManager manager;
 
     // Control: cuántos jugadores se han unido de teclado (para saber si el siguiente es Izquierda o Derecha)
     private int jugadoresTecladoUnidos = 0;
     private bool j1Unido = false;
     private bool j2Unido = false;
+
+    private static string ultimoNivelCargado = "";
 
     void Awake()
     {
@@ -21,6 +28,81 @@ public class UnirseMismoTeclado : MonoBehaviour
         if (prefabJugador1 != null)
         {
             manager.playerPrefab = prefabJugador1;
+        }
+    }
+
+    void Start()
+    {
+        string escenaActual = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        
+        if (ultimoNivelCargado != escenaActual)
+        {
+            // Es la primera vez que entramos a este nivel
+            ultimoNivelCargado = escenaActual;
+            
+            if (contenedorComienzoPartida != null) contenedorComienzoPartida.SetActive(true);
+            if (contenedorJ1 != null) contenedorJ1.SetActive(true);
+            if (contenedorJ2 != null) contenedorJ2.SetActive(true);
+        }
+        else
+        {
+            // El nivel se ha reiniciado
+            if (contenedorComienzoPartida != null) contenedorComienzoPartida.SetActive(false);
+            IniciarAutomaticamente();
+        }
+    }
+
+    void IniciarAutomaticamente()
+    {
+        int controlJ1 = PlayerPrefs.GetInt("ControlJ1", 0);
+        int controlJ2 = PlayerPrefs.GetInt("ControlJ2", 0);
+
+        // --- JUGADOR 1 ---
+        if (controlJ1 == 0) // Teclado
+        {
+            if (Keyboard.current != null)
+            {
+                manager.playerPrefab = prefabJugador1;
+                string esquema = (jugadoresTecladoUnidos == 0) ? "Teclado_Izquierda" : "Teclado_Derecha";
+                manager.JoinPlayer(0, -1, esquema, Keyboard.current);
+                jugadoresTecladoUnidos++;
+                j1Unido = true;
+            }
+        }
+        else // Mando
+        {
+            if (Gamepad.current != null)
+            {
+                manager.playerPrefab = prefabJugador1;
+                manager.JoinPlayer(0, -1, "Mando", Gamepad.current);
+                j1Unido = true;
+            }
+        }
+
+        // --- JUGADOR 2 ---
+        if (j1Unido)
+        {
+            if (controlJ2 == 0) // Teclado
+            {
+                if (Keyboard.current != null)
+                {
+                    manager.playerPrefab = prefabJugador2;
+                    string esquema = (jugadoresTecladoUnidos == 0) ? "Teclado_Izquierda" : "Teclado_Derecha";
+                    manager.JoinPlayer(1, -1, esquema, Keyboard.current);
+                    jugadoresTecladoUnidos++;
+                    j2Unido = true;
+                }
+            }
+            else // Mando
+            {
+                Gamepad mando = ObtenerMandoParaJ2(controlJ1);
+                if (mando != null)
+                {
+                    manager.playerPrefab = prefabJugador2;
+                    manager.JoinPlayer(1, -1, "Mando", mando);
+                    j2Unido = true;
+                }
+            }
         }
     }
 
@@ -42,6 +124,7 @@ public class UnirseMismoTeclado : MonoBehaviour
                     manager.JoinPlayer(0, -1, esquema, Keyboard.current);
                     jugadoresTecladoUnidos++;
                     j1Unido = true;
+                    if (contenedorJ1 != null) contenedorJ1.SetActive(false);
                 }
             }
             else // Mando
@@ -51,6 +134,7 @@ public class UnirseMismoTeclado : MonoBehaviour
                     manager.playerPrefab = prefabJugador1;
                     manager.JoinPlayer(0, -1, "Mando", Gamepad.current);
                     j1Unido = true;
+                    if (contenedorJ1 != null) contenedorJ1.SetActive(false);
                 }
             }
         }
@@ -67,6 +151,7 @@ public class UnirseMismoTeclado : MonoBehaviour
                     manager.JoinPlayer(1, -1, esquema, Keyboard.current);
                     jugadoresTecladoUnidos++;
                     j2Unido = true;
+                    if (contenedorJ2 != null) contenedorJ2.SetActive(false);
                 }
             }
             else // Mando
@@ -78,8 +163,15 @@ public class UnirseMismoTeclado : MonoBehaviour
                     manager.playerPrefab = prefabJugador2;
                     manager.JoinPlayer(1, -1, "Mando", mando);
                     j2Unido = true;
+                    if (contenedorJ2 != null) contenedorJ2.SetActive(false);
                 }
             }
+        }
+
+        // Ocultar contenedor global si ambos están unidos
+        if (j1Unido && j2Unido && contenedorComienzoPartida != null && contenedorComienzoPartida.activeSelf)
+        {
+            contenedorComienzoPartida.SetActive(false);
         }
     }
 
