@@ -37,6 +37,11 @@ public class PantallaMuerte : MonoBehaviour
 
     void MostrarPantallaMuerte()
     {
+        if (MusicManager.instance != null)
+        {
+            // Detener la música cuando el jugador muere
+            MusicManager.instance.DetenerMusica();
+        }
         StartCoroutine(SecuenciaMuerte());
     }
 

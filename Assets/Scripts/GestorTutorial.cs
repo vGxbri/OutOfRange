@@ -20,8 +20,24 @@ public class GestorTutorial : MonoBehaviour
     [Range(0.1f, 1f)]
     public float duracionAnimacion = 0.3f;
 
+    private bool estaMostrando = false; // Controla si el modal está activo
+
+    void Update()
+    {
+        // Si el modal está activo y pulsamos Espacio o Enter, lo cerramos
+        if (estaMostrando && panelModal.activeSelf)
+        {
+            // Usamos GetKeyDown para que solo responda al toque
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
+            {
+                CerrarModal();
+            }
+        }
+    }
+
     public void MostrarModal(string titulo, string contenido, Sprite imagen = null)
     {
+        estaMostrando = true;
         panelModal.SetActive(true);
         textoTitulo.text = titulo;
         textoContenido.text = contenido;
@@ -51,6 +67,9 @@ public class GestorTutorial : MonoBehaviour
 
     public void CerrarModal()
     {
+        if (!estaMostrando) return;
+        estaMostrando = false;
+
         StopAllCoroutines();
         StartCoroutine(AnimarSalida());
     }

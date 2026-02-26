@@ -186,12 +186,17 @@ public class MovimientoJugador : MonoBehaviour
 
     public void AlMover(InputAction.CallbackContext context)
     {
+        if (Time.timeScale == 0f) 
+        {
+            inputMovimiento = Vector2.zero;
+            return;
+        }
         inputMovimiento = context.ReadValue<Vector2>();
     }
 
     public void AlSaltar(InputAction.CallbackContext context)
     {
-        if (!GameManager.JuegoIniciado || estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit) return;
+        if (!GameManager.JuegoIniciado || estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit || Time.timeScale == 0f) return;
 
         if (context.performed && contadorCoyote > 0)
         {
@@ -206,6 +211,13 @@ public class MovimientoJugador : MonoBehaviour
     {
         if (!GameManager.JuegoIniciado || estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit) return;
 
+        // Si el juego está pausado (ej. tutorial abierto), evitamos procesar y cancelamos cargas activas
+        if (Time.timeScale == 0f)
+        {
+            animatorCarga.SetBool("isCharging", false);
+            return;
+        }
+
         if (context.started)
         {
             tiempoPresionado = Time.time;
@@ -215,6 +227,9 @@ public class MovimientoJugador : MonoBehaviour
 
         if (context.canceled)
         {
+            // Solo atacamos si de verdad estábamos cargando el golpe (evita ataques al soltar la tecla tras cerrar el tutorial)
+            if (!animatorCarga.GetBool("isCharging")) return;
+
             float duracionFinal = Time.time - tiempoPresionado;
             animatorCarga.SetBool("isCharging", false);
             animatorCarga.speed = 1f;

@@ -64,7 +64,7 @@ public class MusicManager : MonoBehaviour
             case "Tutorial":
                 StartCoroutine(CambiarMusicaSuave(musicaTutorial));
                 break;
-            case "Lvl1":
+            case "(Lvl1)":
                 StartCoroutine(CambiarMusicaSuave(musicaNivel1));
                 break;
             case "Lvl2":
@@ -84,14 +84,19 @@ public class MusicManager : MonoBehaviour
 
     IEnumerator CambiarMusicaSuave(AudioClip nuevaCancion)
     {
-        if (audioSource.clip == nuevaCancion) yield break;
+        // Si ya está sonando esta canción, no hacemos nada
+        if (audioSource.clip == nuevaCancion && audioSource.isPlaying) yield break;
 
-        // Fade Out (Bajar volumen)
-        float startVolume = audioSource.volume;
-        while (audioSource.volume > 0)
+        // Fade Out (Bajar volumen) si está sonando algo
+        float startVolume = 1f; // asumiendo volumen maximo 1
+        if (audioSource.isPlaying)
         {
-            audioSource.volume -= startVolume * Time.deltaTime / tiempoFade;
-            yield return null;
+            startVolume = audioSource.volume;
+            while (audioSource.volume > 0)
+            {
+                audioSource.volume -= startVolume * Time.unscaledDeltaTime / tiempoFade;
+                yield return null;
+            }
         }
 
         audioSource.Stop();
@@ -99,22 +104,30 @@ public class MusicManager : MonoBehaviour
         audioSource.Play();
 
         // Fade In (Subir volumen)
-        while (audioSource.volume < 1)
+        audioSource.volume = 0f;
+        while (audioSource.volume < 1f)
         {
-            audioSource.volume += startVolume * Time.deltaTime / tiempoFade;
+            audioSource.volume += Time.unscaledDeltaTime / tiempoFade;
             yield return null;
         }
+        audioSource.volume = 1f;
     }
-    void Update()
-    {
-        // Obtenemos el nombre de la escena que se está viendo ahora mismo
-        string nombreEscena = SceneManager.GetActiveScene().name;
 
-        // Si la escena es Nivel1 pero la música que suena no es la del Nivel 1... ¡Cámbiala!
-        if (nombreEscena == "Nivel1" && audioSource.clip != musicaNivel1)
+    public void DetenerMusica()
+    {
+        StopAllCoroutines();
+        StartCoroutine(FadeOutDetener());
+    }
+
+    IEnumerator FadeOutDetener()
+    {
+        float startVolume = audioSource.volume;
+        while (audioSource.volume > 0)
         {
-            StartCoroutine(CambiarMusicaSuave(musicaNivel1));
+            audioSource.volume -= startVolume * Time.unscaledDeltaTime / tiempoFade;
+            yield return null;
         }
-        // Repite esto para los demás niveles importantes si ves que fallan
+        audioSource.Stop();
+        audioSource.volume = 1f; // Reiniciar volumen para la próxima canción
     }
 }
