@@ -20,6 +20,7 @@ public class MenuManager : MonoBehaviour
 
     void Start()
     {
+        Time.timeScale = 1f; // FIX: Ensure time scale is reset to avoid broken animations/UI after returning from a paused game
         MostrarMenu();
     }
 

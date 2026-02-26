@@ -8512,6 +8512,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas_UILevels
       objectReference: {fileID: 0}
+    - target: {fileID: 7083496149677087636, guid: ebb9560276cea914d8f3bc9d4c71529c, type: 3}
+      propertyPath: transicion
+      value: 
+      objectReference: {fileID: 11400000, guid: 023ec633a2fd0dc40839c1aa7c188a43, type: 2}
     - target: {fileID: 7639182635047984771, guid: ebb9560276cea914d8f3bc9d4c71529c, type: 3}
       propertyPath: m_Pivot.x
       value: 0
