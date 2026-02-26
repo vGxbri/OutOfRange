@@ -35,7 +35,7 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
         if (textoBoton != null) colorNormal = textoBoton.color;
         
-        // Autocompletar AudioSource si no está asignado
+        // Autocompletar AudioSource si no está asignado y el objeto está activo
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
     }
 
@@ -94,9 +94,9 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
         anchoObjetivo = 1f;
         if (textoBoton != null) textoBoton.color = colorSeleccionado;
         
-        if (audioSource != null && sonidoHover != null)
+        if (sonidoHover != null)
         {
-            audioSource.PlayOneShot(sonidoHover);
+            ReproducirSonido(sonidoHover);
         }
     }
 
@@ -108,9 +108,29 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     void ReproducirClick()
     {
-        if (audioSource != null && sonidoClick != null)
+        if (sonidoClick != null)
         {
-            audioSource.PlayOneShot(sonidoClick);
+            ReproducirSonido(sonidoClick);
+        }
+    }
+
+    void ReproducirSonido(AudioClip clip)
+    {
+        // El problema es que si el botón se desactiva (ej: al cambiar de menú), 
+        // el AudioSource deja de funcionar inmediatamente.
+        // Como solución robusta, usamos PlayClipAtPoint para el CLICK si el source está en el propio botón,
+        // o PlayOneShot si el source es externo (está en la cámara o manager).
+
+        if (audioSource != null && audioSource.gameObject.activeInHierarchy && audioSource.enabled)
+        {
+            audioSource.PlayOneShot(clip);
+        }
+        else
+        {
+            // Fallback: Reproduce el sonido en la posición de la cámara para que no dependa del botón
+            // Esto crea un objeto temporal que sí suena aunque el menú se cierre.
+            Vector3 posCámara = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
+            AudioSource.PlayClipAtPoint(clip, posCámara);
         }
     }
 }
