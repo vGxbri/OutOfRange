@@ -7,6 +7,7 @@ public class MenuManager : MonoBehaviour
     [Header("Paneles")]
     public GameObject contenedorBotones;
     public GameObject contenedorControles;
+    public GameObject contenedorOpciones;
     public GameObject contenedorNuevaPartida;
 
     [Header("Botones del menú principal")]
@@ -15,7 +16,7 @@ public class MenuManager : MonoBehaviour
     [Header("Transición")]
     public TransitionSettings transicion;
 
-    private enum EstadoMenu { Principal, Controles, ConfirmarNuevaPartida }
+    private enum EstadoMenu { Principal, Controles, Opciones, ConfirmarNuevaPartida }
     private EstadoMenu estadoActual = EstadoMenu.Principal;
 
     void Start()
@@ -28,7 +29,7 @@ public class MenuManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Cancel"))
         {
-            if (estadoActual == EstadoMenu.Controles || estadoActual == EstadoMenu.ConfirmarNuevaPartida)
+            if (estadoActual == EstadoMenu.Controles || estadoActual == EstadoMenu.Opciones || estadoActual == EstadoMenu.ConfirmarNuevaPartida)
             {
                 MostrarMenu();
             }
@@ -38,7 +39,8 @@ public class MenuManager : MonoBehaviour
     public void MostrarMenu()
     {
         contenedorBotones.SetActive(true);
-        contenedorControles.SetActive(false);
+        if (contenedorControles != null) contenedorControles.SetActive(false);
+        if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
         if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
         estadoActual = EstadoMenu.Principal;
 
@@ -52,9 +54,19 @@ public class MenuManager : MonoBehaviour
     public void MostrarControles()
     {
         contenedorBotones.SetActive(false);
-        contenedorControles.SetActive(true);
+        if (contenedorControles != null) contenedorControles.SetActive(true);
+        if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
         if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
         estadoActual = EstadoMenu.Controles;
+    }
+
+    public void MostrarOpciones()
+    {
+        contenedorBotones.SetActive(false);
+        if (contenedorControles != null) contenedorControles.SetActive(false);
+        if (contenedorOpciones != null) contenedorOpciones.SetActive(true);
+        if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        estadoActual = EstadoMenu.Opciones;
     }
 
     // --- BOTÓN "NUEVA PARTIDA" ---
