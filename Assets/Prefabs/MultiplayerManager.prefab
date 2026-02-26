@@ -91,3 +91,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabJugador1: {fileID: 8847985064845794687, guid: 0636622fd20eb854b9e6505d93029638, type: 3}
   prefabJugador2: {fileID: 1142973415396915040, guid: ab6495436f0dcac4181947f93f1d865b, type: 3}
+  contenedorComienzoPartida: {fileID: 0}
+  contenedorJ1: {fileID: 0}
+  contenedorJ2: {fileID: 0}
+  j1ImagenTecla: {fileID: 0}
+  j2ImagenTecla: {fileID: 0}
+  spriteEspacio: {fileID: 1407468494, guid: c355846e93478c44b8871f786881d75f, type: 3}
+  spriteEnter: {fileID: -831171289, guid: 448091f8de86a5c4bb74635111f33e97, type: 3}
+  spriteMandoA: {fileID: 1546391435, guid: 18a0d9fd299b2e745b6ea137e39e61b3, type: 3}
