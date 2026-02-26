@@ -158,6 +158,12 @@ public class UnirseMismoTeclado : MonoBehaviour
         int controlJ1 = PlayerPrefs.GetInt("ControlJ1", 0);
         int controlJ2 = PlayerPrefs.GetInt("ControlJ2", 0);
 
+        // Actualizar iconos cada frame para que refleje cambios si abren el menú de opciones antes de empezar
+        if (!GameManager.JuegoIniciado)
+        {
+            ConfigurarIconosUI();
+        }
+
         // --- JUGADOR 1 ---
         if (!j1Unido)
         {

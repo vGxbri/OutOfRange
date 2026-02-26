@@ -18,20 +18,20 @@ public class PauseManager : MonoBehaviour
     [Header("Transición")]
     public TransitionSettings transicion;
 
+    [Header("UI Fondo Blur")]
+    public GameObject fondoBlurUI;
+
     private bool enPausa = false;
     private bool enSubMenu = false;
-    private BlurPausa blur;
 
     void Start()
     {
         if (contenedorPausa != null) contenedorPausa.SetActive(false);
         if (contenedorControles != null) contenedorControles.SetActive(false);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
+        if (fondoBlurUI != null) fondoBlurUI.SetActive(false);
         enPausa = false;
         enSubMenu = false;
-
-        Camera cam = Camera.main;
-        if (cam != null) blur = cam.GetComponent<BlurPausa>();
     }
 
     void Update()
@@ -49,7 +49,7 @@ public class PauseManager : MonoBehaviour
         enPausa = true;
         Time.timeScale = 0f;
         if (contenedorPausa != null) contenedorPausa.SetActive(true);
-        if (blur != null) blur.ActivarBlur();
+        if (fondoBlurUI != null) fondoBlurUI.SetActive(true);
         SeleccionarBoton(primerBotonPausa);
     }
 
@@ -58,7 +58,7 @@ public class PauseManager : MonoBehaviour
         enPausa = false;
         Time.timeScale = 1f;
         if (contenedorPausa != null) contenedorPausa.SetActive(false);
-        if (blur != null) blur.DesactivarBlur();
+        if (fondoBlurUI != null) fondoBlurUI.SetActive(false);
     }
 
     public void MostrarControles()
