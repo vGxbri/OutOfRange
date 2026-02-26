@@ -78,8 +78,10 @@ public class PantallaMuerte : MonoBehaviour
     public void Reiniciar()
     {
         Time.timeScale = 1f;
+        string currentScene = SceneManager.GetActiveScene().name;
+        Debug.Log("Reiniciando nivel. Escena actual: " + currentScene);
         VidaCompartida.Instancia?.Reiniciar();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene(currentScene);
     }
 
     public void VolverAlMenu()
