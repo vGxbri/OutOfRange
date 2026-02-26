@@ -40,6 +40,7 @@ public class AtaqueJugador : MonoBehaviour
 
         Vector3 posAtaque = ObtenerPosAtaque();
 
+        // 1. Golpear Enemigos (usamos capaEnemigos para optimizar)
         Collider2D[] enemigosGolpeados = Physics2D.OverlapCircleAll(
             posAtaque, rango, capaEnemigos);
 
@@ -49,6 +50,18 @@ public class AtaqueJugador : MonoBehaviour
             if (vida != null)
             {
                 vida.RecibirDaño(daño, transform.position);
+            }
+        }
+
+        // 2. Interaccionar con Objetos de Nivel (como la Piedra Meta)
+        // Hacemos otra comprobación rápida sin máscara para pillar interacciones generales
+        Collider2D[] interacciones = Physics2D.OverlapCircleAll(posAtaque, rango);
+        foreach (var obj in interacciones)
+        {
+            MetaNivel meta = obj.GetComponent<MetaNivel>();
+            if (meta != null)
+            {
+                meta.ActivarMeta(gameObject);
             }
         }
     }

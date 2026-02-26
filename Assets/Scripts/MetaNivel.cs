@@ -17,77 +17,76 @@ public class MetaNivel : MonoBehaviour
         tiempoInicio = Time.time;
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    // --- METODO MODIFICADO: Ahora se llama cuando un jugador "ataca" la piedra ---
+    public void ActivarMeta(GameObject atacante)
     {
-        // Solo actuamos si el Jugador toca la piedra y el nivel no ha acabado ya
-        if (collision.CompareTag("Player") && !nivelTerminado)
+        if (nivelTerminado) return;
+
+        // Evitar disparos accidentales al spawnear (ej: si el ataque ocurre muy pronto)
+        if (Time.time - tiempoInicio < 0.2f) 
         {
-            // Evitar disparos accidentales al spawnear (ej: si el trigger está muy cerca del inicio)
-            if (Time.time - tiempoInicio < 0.2f) 
+            Debug.LogWarning("MetaNivel ignorado por seguridad (demasiado pronto).");
+            return;
+        }
+
+        // --- LÓGICA: COMPROBAR ENEMIGOS ---
+        VidaEnemigo[] todosLosEnemigos = FindObjectsOfType<VidaEnemigo>();
+        int enemigosVivos = 0;
+        
+        foreach (var e in todosLosEnemigos)
+        {
+            // Solo contamos los que no están muertos ni en proceso de morir
+            if (e != null && !e.EstaMuerto())
             {
-                Debug.LogWarning("MetaNivel ignorado por seguridad (demasiado pronto).");
-                return;
+                enemigosVivos++;
             }
+        }
 
-            // --- NUEVA LÓGICA: COMPROBAR ENEMIGOS ---
-            VidaEnemigo[] todosLosEnemigos = FindObjectsOfType<VidaEnemigo>();
-            int enemigosVivos = 0;
-            
-            foreach (var e in todosLosEnemigos)
-            {
-                // Solo contamos los que no están muertos ni en proceso de morir
-                if (e != null && !e.EstaMuerto())
-                {
-                    enemigosVivos++;
-                }
-            }
+        if (enemigosVivos > 0)
+        {
+            Debug.Log($"<color=yellow>¡Aún quedan {enemigosVivos} enemigos!</color> Debes derrotarlos a todos antes de pasar.");
+            // Opcional: Aquí podrías activar un mensaje en pantalla para el usuario
+            return;
+        }
 
-            if (enemigosVivos > 0)
-            {
-                Debug.Log($"<color=yellow>¡Aún quedan {enemigosVivos} enemigos!</color> Debes derrotarlos a todos antes de pasar.");
-                // Opcional: Aquí podrías activar un mensaje en pantalla para el usuario
-                return;
-            }
+        Debug.Log("MetaNivel activada por un ataque de: " + atacante.name + " en pos: " + transform.position);
+        nivelTerminado = true;
 
-            Debug.Log("MetaNivel activada por: " + collision.gameObject.name + " en pos: " + transform.position);
-            nivelTerminado = true;
+        // --- LÓGICA: MOSTRAR UI DE NIVEL COMPLETADO ---
+        MenuNivelCompletado menuCompletado = FindObjectOfType<MenuNivelCompletado>();
+        if (menuCompletado != null)
+        {
+            // Si existe el menú en la escena, le decimos que se muestre y él se encarga de cargar niveles
+            menuCompletado.MostrarMenuCompletado();
+            return;
+        }
 
-            // --- NUEVA LÓGICA: MOSTRAR UI DE NIVEL COMPLETADO ---
-            MenuNivelCompletado menuCompletado = FindObjectOfType<MenuNivelCompletado>();
-            if (menuCompletado != null)
-            {
-                // Si existe el menú en la escena, le decimos que se muestre y él se encarga de cargar niveles
-                menuCompletado.MostrarMenuCompletado();
-                return;
-            }
+        // --- LÓGICA ANTIGUA (Fallback si no hay menú de nivel completado en la escena) ---
+        int proximoIndice = SceneManager.GetActiveScene().buildIndex + 1;
+        int totalEscenas = SceneManager.sceneCountInBuildSettings;
 
-            // --- LÓGICA ANTIGUA (Fallback si no hay menú de nivel completado en la escena) ---
-            int proximoIndice = SceneManager.GetActiveScene().buildIndex + 1;
-            int totalEscenas = SceneManager.sceneCountInBuildSettings;
-
-            TransitionManager tm = TransitionManager.Instance();
+        TransitionManager tm = TransitionManager.Instance();
+        if (tm == null)
+        {
+            tm = FindObjectOfType<TransitionManager>();
             if (tm == null)
             {
-                tm = FindObjectOfType<TransitionManager>();
-                if (tm == null)
-                {
-                    Debug.LogWarning("No se encontró TransitionManager. Cargando escena directamente.");
-                    if (proximoIndice < totalEscenas)
-                        SceneManager.LoadScene(proximoIndice);
-                    else
-                        SceneManager.LoadScene("Main_Menu");
-                    return;
-                }
+                Debug.LogWarning("No se encontró TransitionManager. Cargando escena directamente.");
+                if (proximoIndice < totalEscenas)
+                    SceneManager.LoadScene(proximoIndice);
+                else
+                    SceneManager.LoadScene("Main_Menu");
+                return;
             }
+        }
 
-            if (proximoIndice < totalEscenas)
-            {
-                tm.Transition(proximoIndice, transition, delayCarga);
-            }
-            else
-            {
-                tm.Transition("Main_Menu", transition, delayCarga);
-            }
+        if (proximoIndice < totalEscenas)
+        {
+            tm.Transition(proximoIndice, transition, delayCarga);
+        }
+        else
+        {
+            tm.Transition("Main_Menu", transition, delayCarga);
         }
     }
 }
