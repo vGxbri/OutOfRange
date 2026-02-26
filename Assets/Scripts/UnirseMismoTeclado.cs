@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 
 public class UnirseMismoTeclado : MonoBehaviour
 {
@@ -11,6 +12,15 @@ public class UnirseMismoTeclado : MonoBehaviour
     public GameObject contenedorComienzoPartida;
     public GameObject contenedorJ1;
     public GameObject contenedorJ2;
+
+    [Header("Iconos Teclas UI")]
+    public Image j1ImagenTecla;
+    public Image j2ImagenTecla;
+
+    [Header("Sprites de Teclas")]
+    public Sprite spriteEspacio;
+    public Sprite spriteEnter;
+    public Sprite spriteMandoA;
 
     private PlayerInputManager manager;
 
@@ -43,12 +53,48 @@ public class UnirseMismoTeclado : MonoBehaviour
             if (contenedorComienzoPartida != null) contenedorComienzoPartida.SetActive(true);
             if (contenedorJ1 != null) contenedorJ1.SetActive(true);
             if (contenedorJ2 != null) contenedorJ2.SetActive(true);
+
+            ConfigurarIconosUI();
         }
         else
         {
             // El nivel se ha reiniciado
             if (contenedorComienzoPartida != null) contenedorComienzoPartida.SetActive(false);
             IniciarAutomaticamente();
+        }
+    }
+
+    void ConfigurarIconosUI()
+    {
+        int controlJ1 = PlayerPrefs.GetInt("ControlJ1", 0);
+        int controlJ2 = PlayerPrefs.GetInt("ControlJ2", 0);
+
+        bool j1UsaEnter = (controlJ1 == 0 && controlJ2 == 1);
+
+        // --- Configurar J1 ---
+        if (j1ImagenTecla != null)
+        {
+            if (controlJ1 == 0) // Teclado
+            {
+                j1ImagenTecla.sprite = j1UsaEnter ? spriteEnter : spriteEspacio;
+            }
+            else // Mando
+            {
+                j1ImagenTecla.sprite = spriteMandoA;
+            }
+        }
+
+        // --- Configurar J2 ---
+        if (j2ImagenTecla != null)
+        {
+            if (controlJ2 == 0) // Teclado
+            {
+                j2ImagenTecla.sprite = spriteEnter;
+            }
+            else // Mando
+            {
+                j2ImagenTecla.sprite = spriteMandoA;
+            }
         }
     }
 
@@ -117,7 +163,15 @@ public class UnirseMismoTeclado : MonoBehaviour
         {
             if (controlJ1 == 0) // Teclado
             {
-                if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+                bool j1UsaEnter = (controlJ1 == 0 && controlJ2 == 1);
+                bool presionoBoton = false;
+
+                if (Keyboard.current != null)
+                {
+                    presionoBoton = j1UsaEnter ? Keyboard.current.enterKey.wasPressedThisFrame : Keyboard.current.spaceKey.wasPressedThisFrame;
+                }
+
+                if (presionoBoton)
                 {
                     manager.playerPrefab = prefabJugador1;
                     string esquema = (jugadoresTecladoUnidos == 0) ? "Teclado_Izquierda" : "Teclado_Derecha";
