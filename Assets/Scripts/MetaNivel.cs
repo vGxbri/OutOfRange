@@ -52,6 +52,16 @@ public class MetaNivel : MonoBehaviour
             Debug.Log("MetaNivel activada por: " + collision.gameObject.name + " en pos: " + transform.position);
             nivelTerminado = true;
 
+            // --- NUEVA LÓGICA: MOSTRAR UI DE NIVEL COMPLETADO ---
+            MenuNivelCompletado menuCompletado = FindObjectOfType<MenuNivelCompletado>();
+            if (menuCompletado != null)
+            {
+                // Si existe el menú en la escena, le decimos que se muestre y él se encarga de cargar niveles
+                menuCompletado.MostrarMenuCompletado();
+                return;
+            }
+
+            // --- LÓGICA ANTIGUA (Fallback si no hay menú de nivel completado en la escena) ---
             int proximoIndice = SceneManager.GetActiveScene().buildIndex + 1;
             int totalEscenas = SceneManager.sceneCountInBuildSettings;
 
