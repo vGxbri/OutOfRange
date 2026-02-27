@@ -22,6 +22,10 @@ public class BlurPausa : MonoBehaviour
         {
             materialBlur = new Material(shader);
         }
+        else
+        {
+            Debug.LogWarning("Shader Custom/BlurPausa no encontrado (posiblemente omitido en la build). El blur no funcionará.");
+        }
     }
 
     public void ActivarBlur()

@@ -123,12 +123,20 @@ public class ControladorZona : MonoBehaviour
         // Limpieza de material previo si existe
         if (_materialCache == null)
         {
-            _materialCache = new Material(Shader.Find("Custom/DashedLine"));
+            Shader shader = Shader.Find("Custom/DashedLine");
+            if (shader == null)
+            {
+                // Si falla (por ejemplo, en build porque se omitió el shader),
+                // intentamos usar un shader basico para evitar errores NullReference.
+                Debug.LogWarning("Shader Custom/DashedLine no encontrado. Usando Sprites/Default como fallback.");
+                shader = Shader.Find("Sprites/Default");
+            }
+            _materialCache = new Material(shader);
         }
         lineaBorde.sharedMaterial = _materialCache;
         
         // Configuración para dashes consistentes
-        lineaBorde.textureMode = LineTextureMode.Tile; 
+        lineaBorde.textureMode = LineTextureMode.Tile;
 
         // Textura: 16px (8 white, 8 clear)
         if (texturaLinea == null)

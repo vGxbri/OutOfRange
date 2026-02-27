@@ -1,9 +1,9 @@
 const cacheName = "DefaultCompany-OutOfRange-1.0";
 const contentToCache = [
     "Build/Build_Web_Itch.loader.js",
-    "Build/Build_Web_Itch.framework.js.unityweb",
-    "Build/Build_Web_Itch.data.unityweb",
-    "Build/Build_Web_Itch.wasm.unityweb",
+    "Build/Build_Web_Itch.framework.js",
+    "Build/Build_Web_Itch.data",
+    "Build/Build_Web_Itch.wasm",
     "TemplateData/style.css"
 
 ];
