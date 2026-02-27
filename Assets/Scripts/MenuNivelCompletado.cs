@@ -72,8 +72,7 @@ public class MenuNivelCompletado : MonoBehaviour
             // Seleccionar botón por defecto para la navegación con mando o teclado
             if (EventSystem.current != null && botonSiguienteNivel != null)
             {
-                EventSystem.current.SetSelectedGameObject(null);
-                EventSystem.current.SetSelectedGameObject(botonSiguienteNivel);
+                StartCoroutine(SeleccionarBotonConRetraso(botonSiguienteNivel));
             }
         }
     }
@@ -143,6 +142,16 @@ public class MenuNivelCompletado : MonoBehaviour
         else
         {
             SceneManager.LoadScene("Main_Menu");
+        }
+    }
+
+    private System.Collections.IEnumerator SeleccionarBotonConRetraso(GameObject boton)
+    {
+        yield return null;
+        if (EventSystem.current != null && boton != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(boton);
         }
     }
 }

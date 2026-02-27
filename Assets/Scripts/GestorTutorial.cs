@@ -63,6 +63,15 @@ public class GestorTutorial : MonoBehaviour
 
         // Pausamos el juego
         Time.timeScale = 0f;
+
+        // Seleccionar automáticamente el propio panel o un botón imaginario (o nada si vamos por Input)
+        // Para asegurar que si el juego tiene EventSystem, no se quede en un estado raro
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            // Si el modal tuviera un botón, lo seleccionaríamos aquí
+            // UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(botonCerrar);
+        }
     }
 
     public void CerrarModal()
@@ -114,5 +123,11 @@ public class GestorTutorial : MonoBehaviour
 
         // Reanudamos el juego
         Time.timeScale = 1f;
+        
+        // Limpiar selección
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 }

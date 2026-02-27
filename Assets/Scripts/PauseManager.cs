@@ -59,6 +59,12 @@ public class PauseManager : MonoBehaviour
         Time.timeScale = 1f;
         if (contenedorPausa != null) contenedorPausa.SetActive(false);
         if (fondoBlurUI != null) fondoBlurUI.SetActive(false);
+
+        // Limpiar selección al reanudar
+        if (EventSystem.current != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+        }
     }
 
     public void MostrarControles()
@@ -107,6 +113,15 @@ public class PauseManager : MonoBehaviour
     void SeleccionarBoton(GameObject boton)
     {
         if (boton != null && EventSystem.current != null)
+        {
+            StartCoroutine(SeleccionarBotonConRetraso(boton));
+        }
+    }
+
+    private System.Collections.IEnumerator SeleccionarBotonConRetraso(GameObject boton)
+    {
+        yield return null;
+        if (EventSystem.current != null && boton != null)
         {
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(boton);

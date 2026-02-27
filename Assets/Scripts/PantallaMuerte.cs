@@ -85,8 +85,7 @@ public class PantallaMuerte : MonoBehaviour
         // Seleccionar primer botón para mando
         if (primerBoton != null && EventSystem.current != null)
         {
-            EventSystem.current.SetSelectedGameObject(null);
-            EventSystem.current.SetSelectedGameObject(primerBoton);
+            StartCoroutine(SeleccionarBotonConRetraso(primerBoton));
         }
     }
 
@@ -103,5 +102,15 @@ public class PantallaMuerte : MonoBehaviour
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene("Main_Menu");
+    }
+
+    private IEnumerator SeleccionarBotonConRetraso(GameObject boton)
+    {
+        yield return null;
+        if (EventSystem.current != null && boton != null)
+        {
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(boton);
+        }
     }
 }

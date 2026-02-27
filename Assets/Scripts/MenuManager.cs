@@ -58,6 +58,19 @@ public class MenuManager : MonoBehaviour
         {
             botonNuevaPartida.SetActive(true);
         }
+
+        // Seleccionar primer botón para mando/teclado con un pequeño retraso
+        if (UnityEngine.EventSystems.EventSystem.current != null)
+        {
+            if (botonContinuar != null && botonContinuar.activeSelf)
+            {
+                StartCoroutine(SeleccionarBotonConRetraso(botonContinuar));
+            }
+            else if (botonNuevaPartida != null && botonNuevaPartida.activeSelf)
+            {
+                StartCoroutine(SeleccionarBotonConRetraso(botonNuevaPartida));
+            }
+        }
     }
 
     public void MostrarControles()
@@ -68,6 +81,17 @@ public class MenuManager : MonoBehaviour
         if (contenedorConfirmarNuevaPartida != null) contenedorConfirmarNuevaPartida.SetActive(false);
         if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
         estadoActual = EstadoMenu.Controles;
+
+        // Aquí podrías seleccionar el primer botón del panel de controles si lo tuvieras referenciado,
+        // por ejemplo un botón de "Volver"
+        if (UnityEngine.EventSystems.EventSystem.current != null && contenedorControles != null)
+        {
+            UnityEngine.UI.Button primerBoton = contenedorControles.GetComponentInChildren<UnityEngine.UI.Button>();
+            if (primerBoton != null)
+            {
+                StartCoroutine(SeleccionarBotonConRetraso(primerBoton.gameObject));
+            }
+        }
     }
 
     public void MostrarOpciones()
@@ -78,6 +102,16 @@ public class MenuManager : MonoBehaviour
         if (contenedorConfirmarNuevaPartida != null) contenedorConfirmarNuevaPartida.SetActive(false);
         if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
         estadoActual = EstadoMenu.Opciones;
+
+        // Aquí podrías seleccionar el primer botón del panel de opciones si lo tuvieras referenciado
+        if (UnityEngine.EventSystems.EventSystem.current != null && contenedorOpciones != null)
+        {
+            UnityEngine.UI.Button primerBoton = contenedorOpciones.GetComponentInChildren<UnityEngine.UI.Button>();
+            if (primerBoton != null)
+            {
+                StartCoroutine(SeleccionarBotonConRetraso(primerBoton.gameObject));
+            }
+        }
     }
 
     public void MostrarCreditos()
@@ -91,6 +125,16 @@ public class MenuManager : MonoBehaviour
         if (contenedorCreditos != null) contenedorCreditos.SetActive(true);
 
         estadoActual = EstadoMenu.Creditos;
+
+        // Aquí podrías seleccionar el primer botón del panel de créditos si lo tuvieras referenciado
+        if (UnityEngine.EventSystems.EventSystem.current != null && contenedorCreditos != null)
+        {
+            UnityEngine.UI.Button primerBoton = contenedorCreditos.GetComponentInChildren<UnityEngine.UI.Button>();
+            if (primerBoton != null)
+            {
+                StartCoroutine(SeleccionarBotonConRetraso(primerBoton.gameObject));
+            }
+        }
     }
 
     // --- BOTÓN "NUEVA PARTIDA" ---
@@ -102,6 +146,17 @@ public class MenuManager : MonoBehaviour
             contenedorBotones.SetActive(false);
             contenedorConfirmarNuevaPartida.SetActive(true);
             estadoActual = EstadoMenu.ConfirmarNuevaPartida;
+
+            // Seleccionar primer botón para mando/teclado en confirmación (ej. botón Cancelar o Confirmar)
+            // Asumiendo que podemos buscarlo en los hijos o simplemente seleccionamos el primero interactable
+            if (UnityEngine.EventSystems.EventSystem.current != null)
+            {
+                UnityEngine.UI.Button primerBotonConfirmacion = contenedorConfirmarNuevaPartida.GetComponentInChildren<UnityEngine.UI.Button>();
+                if (primerBotonConfirmacion != null)
+                {
+                    StartCoroutine(SeleccionarBotonConRetraso(primerBotonConfirmacion.gameObject));
+                }
+            }
         }
         else
         {
@@ -155,5 +210,17 @@ public class MenuManager : MonoBehaviour
     {
         GestorGuardado.GuardarProgreso("Tutorial", 0);
         TransitionManager.Instance().Transition("Tutorial", transicion, 0f);
+    }
+
+    private System.Collections.IEnumerator SeleccionarBotonConRetraso(GameObject boton)
+    {
+        // Esperamos un frame para asegurarnos que la UI se ha activado por completo
+        // y el EventSystem ha limpiado el estado anterior.
+        yield return null;
+        if (UnityEngine.EventSystems.EventSystem.current != null && boton != null)
+        {
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
+            UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(boton);
+        }
     }
 }
