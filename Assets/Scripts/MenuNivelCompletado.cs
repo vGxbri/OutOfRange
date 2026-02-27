@@ -74,6 +74,26 @@ public class MenuNivelCompletado : MonoBehaviour
             {
                 StartCoroutine(SeleccionarBotonConRetraso(botonSiguienteNivel));
             }
+
+            // --- GUARDAR PROGRESO AUTOMÁTICAMENTE ---
+            // Al completar el nivel, queremos que el jugador aparezca en el SIGUIENTE nivel al darle a "Continuar" en el menú
+            int proximoIndice = SceneManager.GetActiveScene().buildIndex + 1;
+            int totalEscenas = SceneManager.sceneCountInBuildSettings;
+
+            if (proximoIndice < totalEscenas)
+            {
+                // Extraemos el nombre de la siguiente escena para el Manager
+                string proximaEscenaRuta = SceneUtility.GetScenePathByBuildIndex(proximoIndice);
+                string nombreProximaEscena = System.IO.Path.GetFileNameWithoutExtension(proximaEscenaRuta);
+                
+                GestorGuardado.GuardarProgreso(nombreProximaEscena, proximoIndice);
+                Debug.Log($"Nivel completado. Guardando progreso para el siguiente nivel: {nombreProximaEscena} (Índice {proximoIndice})");
+            }
+            else
+            {
+                // Si este era el último nivel del juego, podemos borrar el guardado o mantener el último
+                Debug.Log("Último nivel completado. No hay más niveles por delante.");
+            }
         }
     }
 
