@@ -9,6 +9,7 @@ public class MenuManager : MonoBehaviour
     public GameObject contenedorControles;
     public GameObject contenedorOpciones;
     public GameObject contenedorNuevaPartida;
+    public GameObject contenedorCreditos;
 
     [Header("Botones del menú principal")]
     public GameObject botonContinuar;
@@ -16,12 +17,13 @@ public class MenuManager : MonoBehaviour
     [Header("Transición")]
     public TransitionSettings transicion;
 
-    private enum EstadoMenu { Principal, Controles, Opciones, ConfirmarNuevaPartida }
+    private enum EstadoMenu { Principal, Controles, Opciones, ConfirmarNuevaPartida, Creditos }
     private EstadoMenu estadoActual = EstadoMenu.Principal;
 
     void Start()
     {
-        Time.timeScale = 1f; // FIX: Ensure time scale is reset to avoid broken animations/UI after returning from a paused game
+        Time.timeScale = 1f;
+        OcultarTodosLosPaneles();
         MostrarMenu();
     }
 
@@ -29,7 +31,8 @@ public class MenuManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape) || Input.GetButtonDown("Cancel"))
         {
-            if (estadoActual == EstadoMenu.Controles || estadoActual == EstadoMenu.Opciones || estadoActual == EstadoMenu.ConfirmarNuevaPartida)
+            if (estadoActual == EstadoMenu.Controles || estadoActual == EstadoMenu.Opciones ||
+                estadoActual == EstadoMenu.ConfirmarNuevaPartida || estadoActual == EstadoMenu.Creditos)
             {
                 MostrarMenu();
             }
@@ -42,9 +45,9 @@ public class MenuManager : MonoBehaviour
         if (contenedorControles != null) contenedorControles.SetActive(false);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
         if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        if (contenedorCreditos != null) contenedorCreditos.SetActive(false); // <-- AÑADIDO
         estadoActual = EstadoMenu.Principal;
 
-        // Mostrar u ocultar el botón de continuar según si hay partida guardada
         if (botonContinuar != null)
         {
             botonContinuar.SetActive(GestorGuardado.HayPartidaGuardada());
@@ -57,6 +60,7 @@ public class MenuManager : MonoBehaviour
         if (contenedorControles != null) contenedorControles.SetActive(true);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
         if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
         estadoActual = EstadoMenu.Controles;
     }
 
@@ -66,7 +70,21 @@ public class MenuManager : MonoBehaviour
         if (contenedorControles != null) contenedorControles.SetActive(false);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(true);
         if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
         estadoActual = EstadoMenu.Opciones;
+    }
+
+    public void MostrarCreditos()
+    {
+        contenedorBotones.SetActive(false);
+        if (contenedorControles != null) contenedorControles.SetActive(false);
+        if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
+        if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+
+        // Activamos el panel de créditos
+        if (contenedorCreditos != null) contenedorCreditos.SetActive(true);
+
+        estadoActual = EstadoMenu.Creditos;
     }
 
     // --- BOTÓN "NUEVA PARTIDA" ---
@@ -118,6 +136,15 @@ public class MenuManager : MonoBehaviour
     }
 
     // --- UTILIDAD ---
+    private void OcultarTodosLosPaneles()
+    {
+        if (contenedorBotones != null) contenedorBotones.SetActive(false);
+        if (contenedorControles != null) contenedorControles.SetActive(false);
+        if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
+        if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
+    }
+
     void IniciarNuevaPartida()
     {
         GestorGuardado.GuardarProgreso("Tutorial", 0);
