@@ -329,6 +329,8 @@ MonoBehaviour:
   tieneDash: 1
   velocidadDash: 3
   duracionDash: 0.2
+  radioImpactoDash: 0.09
+  offsetImpactoDash: {x: 0, y: 0.07}
   audioS: {fileID: 2732657497940274948}
   audioPasos: {fileID: 2734474720361036529}
   sonidoSalto: {fileID: 0}

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -24,6 +25,8 @@ public class MovimientoJugador : MonoBehaviour
     public bool tieneDash;
     public float velocidadDash = 10f;
     public float duracionDash = 0.2f;
+    public float radioImpactoDash = 0.4f;
+    public Vector2 offsetImpactoDash = new Vector2(0f, 0f);
 
     [Header("Sonidos")]
     public AudioSource audioS;
@@ -269,7 +272,40 @@ public class MovimientoJugador : MonoBehaviour
         rb.velocity = new Vector2(direccion * velocidadDash, 0);
 
         animator.SetTrigger("Dash");
-        yield return new WaitForSeconds(duracionDash);
+
+        AtaqueJugador ataque = GetComponent<AtaqueJugador>();
+        float tiempo = 0f;
+        List<Collider2D> enemigosGolpeados = new List<Collider2D>();
+
+        while (tiempo < duracionDash)
+        {
+            tiempo += Time.deltaTime;
+
+            if (ataque != null)
+            {
+                // Calcular posición teniendo en cuenta la dirección
+                float directionMultiplier = spriteRenderer.flipX ? -1f : 1f;
+                Vector2 posCentroDash = (Vector2)transform.position + new Vector2(offsetImpactoDash.x * directionMultiplier, offsetImpactoDash.y);
+
+                Collider2D[] contactos = Physics2D.OverlapCircleAll(posCentroDash, radioImpactoDash, ataque.capaEnemigos);
+                
+                foreach (Collider2D col in contactos)
+                {
+                    if (!enemigosGolpeados.Contains(col))
+                    {
+                        enemigosGolpeados.Add(col);
+                        VidaEnemigo vida = col.GetComponent<VidaEnemigo>();
+                        if (vida != null)
+                        {
+                            // Hace el daño de un ataque básico (un corazón)
+                            vida.RecibirDaño(ataque.dañoAtaque, transform.position);
+                        }
+                    }
+                }
+            }
+
+            yield return null;
+        }
 
         rb.velocity = Vector2.zero;
         rb.gravityScale = gravedadOriginal;
@@ -298,12 +334,18 @@ public class MovimientoJugador : MonoBehaviour
         rb.velocity = Vector2.zero;
     }
 
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         if (detectorSuelo != null)
         {
             Gizmos.color = tocandoSuelo ? Color.green : Color.red;
             Gizmos.DrawWireCube(detectorSuelo.position, tamañoCajaDeteccion);
         }
+
+        // Mostrar radio de impacto del Dash
+        Gizmos.color = Color.yellow;
+        float directionMultiplier = (spriteRenderer != null && spriteRenderer.flipX) ? -1f : 1f;
+        Vector2 posCentroDash = (Vector2)transform.position + new Vector2(offsetImpactoDash.x * directionMultiplier, offsetImpactoDash.y);
+        Gizmos.DrawWireSphere(posCentroDash, radioImpactoDash);
     }
 }
