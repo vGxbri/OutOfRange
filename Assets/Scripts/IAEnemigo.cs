@@ -42,6 +42,10 @@ public class IAEnemigo : MonoBehaviour
     [Header("Golpe")]
     public float tiempoStun = 0.4f;
 
+    [Header("Sonidos")]
+    public AudioClip sonidoAtaque;
+    private AudioSource audioSource;
+
     [Header("Variación (%)")]
     [Range(0, 50)]
     public int variacionTiempos = 20;
@@ -68,6 +72,8 @@ public class IAEnemigo : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         capsuleCollider = GetComponent<CapsuleCollider2D>();
+        audioSource = GetComponent<AudioSource>(); // Intentar obtener el AudioSource
+        
         tiempoUltimoAtaque = -cooldownAtaque;
         timerEstado = VariarTiempo(Random.Range(tiempoCaminarMin, tiempoCaminarMax));
 
@@ -345,6 +351,12 @@ public class IAEnemigo : MonoBehaviour
         timerEstado = Time.time + VariarTiempo(duracionAtaque);
 
         if (animator != null) animator.SetTrigger("Attack");
+
+        // Reproducir sonido de ataque
+        if (audioSource != null && sonidoAtaque != null)
+        {
+            audioSource.PlayOneShot(sonidoAtaque);
+        }
 
         // Calcular posición de ataque con offset
         Vector2 posAtaque = (Vector2)transform.position + offsetAtaque;
