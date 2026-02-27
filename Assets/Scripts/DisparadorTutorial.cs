@@ -1,10 +1,13 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 
 public class DisparadorTutorial : MonoBehaviour
 {
     public string titulo;
     [TextArea] public string mensaje;
-    public Sprite imagenTutorial; // Imagen específica para este tutorial
+    public Sprite imagenTutorial;
     private bool yaSeUso = false;
 
     private void OnTriggerEnter2D(Collider2D collision)

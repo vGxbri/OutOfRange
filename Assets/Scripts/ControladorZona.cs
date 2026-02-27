@@ -1,36 +1,32 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using System.Collections;
 
 public class ControladorZona : MonoBehaviour
 {
-    // Opciones para elegir en el inspector
     public enum FormaZona { Circulo, Cuadrado }
 
     [Header("Configuración")]
     public FormaZona formaActual = FormaZona.Circulo;
-    public float radio = 5f;               // Tamaño si es círculo
-    public Vector2 tamanoBox = new Vector2(8, 6); // Tamaño si es cuadrado
+    public float radio = 5f;
+    public Vector2 tamanoBox = new Vector2(8, 6);
 
     [Header("Referencias (Arrastra aquí)")]
     public CircleCollider2D colCirculo;
     public BoxCollider2D colCuadrado;
-    public Transform visuales; // El objeto hijo que tiene el Sprite
+    public Transform visuales;
 
-    // Variables privadas (el juego las rellena solas)
     private GameObject jugadorVictima; 
 
-    // --- FUNCIÓN PRINCIPAL DE CONFIGURACIÓN ---
-    // Esta función la llamará el GameManager al arrancar
     public void ConfigurarZona(GameObject dueño, GameObject victima)
     {
-        // 1. Guardamos quién va a morir si sale
         jugadorVictima = victima;
 
-        // 2. Nos pegamos al dueño (nos hacemos sus hijos)
         transform.SetParent(dueño.transform);
-        transform.localPosition = Vector3.zero; // Nos centramos en él
+        transform.localPosition = Vector3.zero;
 
-        // 3. Aplicamos la forma y tamaño correctos
         ActualizarForma();
     }
 
@@ -45,7 +41,7 @@ public class ControladorZona : MonoBehaviour
     public string nombreCapaOrden = "Zona Jugador";
     public int ordenCapa = 10;
 
-    // ... (rest of the code)
+
 
     void DibujarCirculo()
     {
@@ -68,7 +64,6 @@ public class ControladorZona : MonoBehaviour
 
         float perimetro = 2f * Mathf.PI * radio;
         
-        // Ajustar tiling para dashes perfectos
         float densidad = perimetro / espacioGuion;
         if(_materialCache) _materialCache.mainTextureScale = new Vector2(densidad, 1);
     }
@@ -84,19 +79,16 @@ public class ControladorZona : MonoBehaviour
         float w = tamanoBox.x / 2;
         float h = tamanoBox.y / 2;
         
-        // Esquinas (sentido horario o antihorario)
         lineaBorde.SetPosition(0, new Vector3(-w, -h, 0));
         lineaBorde.SetPosition(1, new Vector3(-w, h, 0));
         lineaBorde.SetPosition(2, new Vector3(w, h, 0));
         lineaBorde.SetPosition(3, new Vector3(w, -h, 0));
         
-        // Tiling perfecto
         float perimetro = (tamanoBox.x * 2f) + (tamanoBox.y * 2f);
         float densidad = perimetro / espacioGuion;
         if(_materialCache) _materialCache.mainTextureScale = new Vector2(densidad, 1);
     }
 
-    // Material caché para evitar instanciar copias constantemente
     private Material _materialCache;
     private Texture2D texturaLinea;
 

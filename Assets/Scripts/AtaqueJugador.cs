@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 
 public class AtaqueJugador : MonoBehaviour
@@ -48,7 +51,6 @@ public class AtaqueJugador : MonoBehaviour
 
         Vector3 posAtaque = ObtenerPosAtaque();
 
-        // 1. Golpear Enemigos (usamos capaEnemigos para optimizar)
         Collider2D[] enemigosGolpeados = Physics2D.OverlapCircleAll(
             posAtaque, rango, capaEnemigos);
 
@@ -61,8 +63,6 @@ public class AtaqueJugador : MonoBehaviour
             }
         }
 
-        // 2. Interaccionar con Objetos de Nivel (como la Piedra Meta)
-        // Hacemos otra comprobación rápida sin máscara para pillar interacciones generales
         Collider2D[] interacciones = Physics2D.OverlapCircleAll(posAtaque, rango);
         foreach (var obj in interacciones)
         {

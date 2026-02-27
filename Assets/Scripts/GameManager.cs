@@ -1,9 +1,12 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject prefabZona; // Arrastra tu zona aquí
+    public GameObject prefabZona;
     public bool jugador1LlevaZona = true;
 
     private bool zonaCreada = false;
@@ -11,8 +14,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        JuegoIniciado = false; // Resetear al empezar la escena
-        // Busca jugadores cada 0.5 segundos
+        JuegoIniciado = false;
         InvokeRepeating("BuscarJugadores", 0.5f, 0.5f);
     }
 
@@ -20,20 +22,17 @@ public class GameManager : MonoBehaviour
     {
         if (zonaCreada) return;
 
-        // Busca las tarjetas de identidad
         IdentidadJugador[] jugadores = FindObjectsOfType<IdentidadJugador>();
         
         GameObject j1 = null;
         GameObject j2 = null;
 
-        // Clasifica
         foreach (var id in jugadores)
         {
             if (id.numeroJugador == 1) j1 = id.gameObject;
             if (id.numeroJugador == 2) j2 = id.gameObject;
         }
 
-        // Si están los dos, BOOM, creamos la zona
         if (j1 != null && j2 != null)
         {
             CancelInvoke("BuscarJugadores");
@@ -50,7 +49,5 @@ public class GameManager : MonoBehaviour
 
         if (jugador1LlevaZona) ctrl.ConfigurarZona(p1, p2);
         else ctrl.ConfigurarZona(p2, p1);
-        
-        Debug.Log("¡Zona creada y asignada!");
     }
 }

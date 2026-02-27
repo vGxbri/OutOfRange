@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
@@ -60,7 +63,6 @@ public class PauseManager : MonoBehaviour
         if (contenedorPausa != null) contenedorPausa.SetActive(false);
         if (fondoBlurUI != null) fondoBlurUI.SetActive(false);
 
-        // Limpiar selección al reanudar
         if (EventSystem.current != null)
         {
             EventSystem.current.SetSelectedGameObject(null);

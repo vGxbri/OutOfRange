@@ -1,4 +1,7 @@
-﻿using System.Collections;
+﻿// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -30,7 +33,7 @@ public class MovimientoJugador : MonoBehaviour
 
     [Header("Sonidos")]
     public AudioSource audioS;
-    public AudioSource audioPasos; // Canal dedicado para pasos
+    public AudioSource audioPasos;
     public AudioClip sonidoSalto;
     public AudioClip sonidoDash;
     public AudioClip pasosHierba;
@@ -39,13 +42,11 @@ public class MovimientoJugador : MonoBehaviour
     private float contadorPasos;
     private string tipoSueloActual = "Plataforma";
 
-    // Componentes
     private Rigidbody2D rb;
     private Animator animator;
     private SpriteRenderer spriteRenderer;
     private Camera camaraPrincipal;
 
-    // Variables de estado
     private Vector2 inputMovimiento;
     private bool tocandoSuelo;
     private float tiempoCoyote = 0.15f;
@@ -63,7 +64,6 @@ public class MovimientoJugador : MonoBehaviour
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // Referencia a la cámara y cálculo de bordes del sprite
         camaraPrincipal = Camera.main;
         if (spriteRenderer != null)
         {
@@ -73,7 +73,6 @@ public class MovimientoJugador : MonoBehaviour
 
     void Update()
     {
-        // Si el juego se pausa (ej: tutorial), detenemos el sonido de los pasos inmediatamente
         if (Time.timeScale == 0f)
         {
             if (audioPasos != null && audioPasos.isPlaying)
@@ -85,7 +84,6 @@ public class MovimientoJugador : MonoBehaviour
 
     void FixedUpdate()
     {
-        // 1. GESTIÓN DE BLOQUEOS
         if (estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit || estaDasheando)
         {
             if (!estaDasheando) rb.velocity = new Vector2(0, rb.velocity.y);
@@ -93,7 +91,6 @@ public class MovimientoJugador : MonoBehaviour
             return;
         }
 
-        // 2. DETECCIÓN DE SUELO (Solo detectamos suelo si no estamos subiendo)
         if (rb.velocity.y <= 0.1f)
         {
             Collider2D col = Physics2D.OverlapBox(detectorSuelo.position, tamañoCajaDeteccion, 0f, capaSuelo);
@@ -110,30 +107,24 @@ public class MovimientoJugador : MonoBehaviour
             tocandoSuelo = false;
         }
 
-        // 3. LÓGICA DE COYOTE TIME
         if (tocandoSuelo) contadorCoyote = tiempoCoyote;
         else contadorCoyote -= Time.fixedDeltaTime;
 
-        // 4. GRAVEDAD DINÁMICA
         if (!estaDasheando)
         {
             rb.gravityScale = (rb.velocity.y < 0) ? 1.2f : 0.7f;
         }
 
-        // 5. MOVIMIENTO HORIZONTAL
         float entradaActualX = GameManager.JuegoIniciado ? inputMovimiento.x : 0f;
         rb.velocity = new Vector2(entradaActualX * velocidad, rb.velocity.y);
 
-        // 6. ACTUALIZAR ANIMATOR
         animator.SetBool("enSuelo", tocandoSuelo);
         animator.SetFloat("Velocidad", Mathf.Abs(entradaActualX));
         animator.SetFloat("VelocidadVertical", rb.velocity.y);
 
-        // 7. GIRAR SPRITE
         if (entradaActualX > 0) spriteRenderer.flipX = false;
         else if (entradaActualX < 0) spriteRenderer.flipX = true;
 
-        // --- LÓGICA DE PASOS MEJORADA ---
         bool seEstaMoviendo = Mathf.Abs(rb.velocity.x) > 0.1f;
 
         if (tocandoSuelo && seEstaMoviendo && !estaDasheando)
@@ -147,7 +138,6 @@ public class MovimientoJugador : MonoBehaviour
         }
         else
         {
-            // Ahora si paramos de andar, solo paramos el canal de pasos
             if (audioPasos != null && audioPasos.isPlaying)
             {
                 audioPasos.Stop();
@@ -162,7 +152,6 @@ public class MovimientoJugador : MonoBehaviour
         
         if (audioPasos && clipAElegir)
         {
-            // Usamos un canal independiente para que el Stop() no mate ataques/saltos
             audioPasos.clip = clipAElegir;
             audioPasos.pitch = Random.Range(0.9f, 1.1f);
             audioPasos.Play();
@@ -171,7 +160,6 @@ public class MovimientoJugador : MonoBehaviour
 
     void LateUpdate()
     {
-        // --- RESTRICCIÓN DE PANTALLA ---
         if (!estaMuerto && camaraPrincipal != null)
         {
             float limiteIzquierdo = camaraPrincipal.ViewportToWorldPoint(new Vector3(0, 0, 0)).x;
@@ -214,7 +202,6 @@ public class MovimientoJugador : MonoBehaviour
     {
         if (!GameManager.JuegoIniciado || estaMuerto || bloqueadoPorAtaque || bloqueadoPorHit) return;
 
-        // Si el juego está pausado (ej. tutorial abierto), evitamos procesar y cancelamos cargas activas
         if (Time.timeScale == 0f)
         {
             animatorCarga.SetBool("isCharging", false);
@@ -230,7 +217,6 @@ public class MovimientoJugador : MonoBehaviour
 
         if (context.canceled)
         {
-            // Solo atacamos si de verdad estábamos cargando el golpe (evita ataques al soltar la tecla tras cerrar el tutorial)
             if (!animatorCarga.GetBool("isCharging")) return;
 
             float duracionFinal = Time.time - tiempoPresionado;
@@ -283,7 +269,6 @@ public class MovimientoJugador : MonoBehaviour
 
             if (ataque != null)
             {
-                // Calcular posición teniendo en cuenta la dirección
                 float directionMultiplier = spriteRenderer.flipX ? -1f : 1f;
                 Vector2 posCentroDash = (Vector2)transform.position + new Vector2(offsetImpactoDash.x * directionMultiplier, offsetImpactoDash.y);
 
@@ -297,7 +282,6 @@ public class MovimientoJugador : MonoBehaviour
                         VidaEnemigo vida = col.GetComponent<VidaEnemigo>();
                         if (vida != null)
                         {
-                            // Hace el daño de un ataque básico (un corazón)
                             vida.RecibirDaño(ataque.dañoAtaque, transform.position);
                         }
                     }
@@ -342,7 +326,6 @@ public class MovimientoJugador : MonoBehaviour
             Gizmos.DrawWireCube(detectorSuelo.position, tamañoCajaDeteccion);
         }
 
-        // Mostrar radio de impacto del Dash
         Gizmos.color = Color.yellow;
         float directionMultiplier = (spriteRenderer != null && spriteRenderer.flipX) ? -1f : 1f;
         Vector2 posCentroDash = (Vector2)transform.position + new Vector2(offsetImpactoDash.x * directionMultiplier, offsetImpactoDash.y);

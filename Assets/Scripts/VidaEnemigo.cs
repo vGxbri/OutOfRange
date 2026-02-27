@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using System.Collections;
 using UnityEngine;
 
@@ -39,7 +42,6 @@ public class VidaEnemigo : MonoBehaviour
         vidaActual -= cantidad;
         Debug.Log($"{gameObject.name} recibió daño. Vida: {vidaActual}/{vidaMaxima}");
 
-        // Knockback
         if (rb != null && posicionAtacante != Vector2.zero)
         {
             float dirKnockback = Mathf.Sign(transform.position.x - posicionAtacante.x);
@@ -55,7 +57,6 @@ public class VidaEnemigo : MonoBehaviour
             if (animator != null) animator.SetTrigger("Hit");
             if (ia != null) ia.RecibirGolpe();
 
-            // Flash rojo breve al recibir daño
             if (spriteRenderer != null) StartCoroutine(FlashDaño());
         }
     }
@@ -72,27 +73,21 @@ public class VidaEnemigo : MonoBehaviour
         muerto = true;
         Debug.Log($"{gameObject.name} ha muerto!");
 
-        // Desactivar IA y Animator
         if (ia != null) ia.enabled = false;
         if (animator != null) animator.enabled = false;
 
-        // Desactivar todas las colisiones
         Collider2D[] colliders = GetComponents<Collider2D>();
         foreach (var col in colliders) col.enabled = false;
 
-        // Efecto visual de muerte
         StartCoroutine(EfectoMuerte());
     }
 
     IEnumerator EfectoMuerte()
     {
-        // 1. Flash rojo instantáneo
         if (spriteRenderer != null) spriteRenderer.color = colorMuerte;
 
-        // Pequeña pausa para que se note el flash
         yield return new WaitForSeconds(0.15f);
 
-        // 2. Fade out + encogerse
         Vector3 escalaInicial = transform.localScale;
         Color colorInicial = spriteRenderer != null ? spriteRenderer.color : Color.red;
         float timer = 0f;
@@ -102,10 +97,8 @@ public class VidaEnemigo : MonoBehaviour
             timer += Time.deltaTime;
             float t = timer / duracionMuerte;
 
-            // Encogerse
             transform.localScale = Vector3.Lerp(escalaInicial, Vector3.zero, t);
 
-            // Fade out
             if (spriteRenderer != null)
             {
                 Color c = colorInicial;

@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,8 +10,8 @@ using UnityEngine.EventSystems; // Para limpiar selección de UI y soporte de ma
 public class MenuNivelCompletado : MonoBehaviour
 {
     [Header("UI del Nivel Completado")]
-    public GameObject contenedorPrincipal; // Asigna aquí el ContenedorNivelCompletado
-    public GameObject botonSiguienteNivel; // El botón para que se seleccione automáticamente (Mando/Teclado)
+    public GameObject contenedorPrincipal;
+    public GameObject botonSiguienteNivel;
 
     [Header("Efecto de Aparición (Fade-In)")]
     public bool usarFadeIn = true;
@@ -27,21 +30,18 @@ public class MenuNivelCompletado : MonoBehaviour
 
     private void Start()
     {
-        // Nos aseguramos de que el contenedor esté oculto al iniciar el nivel
         if (contenedorPrincipal != null)
         {
             contenedorPrincipal.SetActive(false);
 
             if (usarFadeIn)
             {
-                // Obtenemos o añadimos automáticamente el CanvasGroup para controlar la transparencia
                 canvasGroup = contenedorPrincipal.GetComponent<CanvasGroup>();
                 if (canvasGroup == null)
                 {
                     canvasGroup = contenedorPrincipal.AddComponent<CanvasGroup>();
                 }
                 
-                // Empezamos totalmente transparentes
                 canvasGroup.alpha = 0f;
                 canvasGroup.interactable = false;
                 canvasGroup.blocksRaycasts = false;
@@ -63,26 +63,21 @@ public class MenuNivelCompletado : MonoBehaviour
                 StartCoroutine(FadeInRutina());
             }
 
-            // Reproducir sonido de victoria
             if (audioSource != null && sonidoVictoria != null)
             {
                 audioSource.PlayOneShot(sonidoVictoria);
             }
 
-            // Seleccionar botón por defecto para la navegación con mando o teclado
             if (EventSystem.current != null && botonSiguienteNivel != null)
             {
                 StartCoroutine(SeleccionarBotonConRetraso(botonSiguienteNivel));
             }
 
-            // --- GUARDAR PROGRESO AUTOMÁTICAMENTE ---
-            // Al completar el nivel, queremos que el jugador aparezca en el SIGUIENTE nivel al darle a "Continuar" en el menú
             int proximoIndice = SceneManager.GetActiveScene().buildIndex + 1;
             int totalEscenas = SceneManager.sceneCountInBuildSettings;
 
             if (proximoIndice < totalEscenas)
             {
-                // Extraemos el nombre de la siguiente escena para el Manager
                 string proximaEscenaRuta = SceneUtility.GetScenePathByBuildIndex(proximoIndice);
                 string nombreProximaEscena = System.IO.Path.GetFileNameWithoutExtension(proximaEscenaRuta);
                 
@@ -91,7 +86,6 @@ public class MenuNivelCompletado : MonoBehaviour
             }
             else
             {
-                // Si este era el último nivel del juego, podemos borrar el guardado o mantener el último
                 Debug.Log("Último nivel completado. No hay más niveles por delante.");
             }
         }
@@ -102,7 +96,7 @@ public class MenuNivelCompletado : MonoBehaviour
         float tiempoPasado = 0f;
         while (tiempoPasado < tiempoFadeIn)
         {
-            tiempoPasado += Time.unscaledDeltaTime; // Por si el juego llegase a pausarse
+            tiempoPasado += Time.unscaledDeltaTime;
             canvasGroup.alpha = Mathf.Lerp(0f, 1f, tiempoPasado / tiempoFadeIn);
             yield return null;
         }
@@ -112,11 +106,9 @@ public class MenuNivelCompletado : MonoBehaviour
         canvasGroup.blocksRaycasts = true;
     }
 
-    // --- MÉTODOS PARA LOS BOTONES ---
-
     public void SiguienteNivel()
     {
-        Time.timeScale = 1f; // Restaurar el tiempo por si acaso lo habías pausado
+        Time.timeScale = 1f;
 
         int proximoIndice = SceneManager.GetActiveScene().buildIndex + 1;
         int totalEscenas = SceneManager.sceneCountInBuildSettings;
@@ -140,14 +132,13 @@ public class MenuNivelCompletado : MonoBehaviour
         }
         else
         {
-            // Si ya no hay más niveles (es el último), volver al menú principal
             MenuPrincipal();
         }
     }
 
     public void MenuPrincipal()
     {
-        Time.timeScale = 1f; // Restaurar el tiempo
+        Time.timeScale = 1f;
 
         TransitionManager tm = TransitionManager.Instance();
         if (tm == null)

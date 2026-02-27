@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -25,7 +28,6 @@ public class CameraFollow : MonoBehaviour
         cam = GetComponent<Camera>();
         initialZ = transform.position.z;
 
-        // Intento inicial de buscar jugadores si ya están en la escena
         EncontrarJugadores();
     }
 
@@ -33,18 +35,15 @@ public class CameraFollow : MonoBehaviour
     {
         if (!GameManager.JuegoIniciado) return;
 
-        // Si no hay nadie a quien seguir, buscamos. Si sigue sin haber nadie, paramos.
         if (targets.Count == 0 || targets[0] == null)
         {
             EncontrarJugadores();
             return;
         }
 
-        // 1. Calcular punto medio
         Vector3 centerPoint = GetCenterPoint();
         Vector3 targetPos = centerPoint + (Vector3)offset;
 
-        // 2. Límites de la cámara
         float camHeight = cam.orthographicSize;
         float camWidth = camHeight * cam.aspect;
 
@@ -55,7 +54,6 @@ public class CameraFollow : MonoBehaviour
 
         Vector3 finalPosition = new Vector3(clampedX, clampedY, initialZ);
 
-        // 3. Movimiento
         if (primeraVez)
         {
             transform.position = finalPosition;
@@ -69,7 +67,6 @@ public class CameraFollow : MonoBehaviour
 
     private void EncontrarJugadores()
     {
-        // Busca cualquier objeto que tenga el script MovimientoJugador
         MovimientoJugador[] jugadores = FindObjectsOfType<MovimientoJugador>();
         foreach (var j in jugadores)
         {
@@ -89,7 +86,7 @@ public class CameraFollow : MonoBehaviour
 
     public void AddTarget(Transform newTarget)
     {
-        if (targets == null) targets = new List<Transform>(); // Evita error de lista nula
+        if (targets == null) targets = new List<Transform>();
         if (!targets.Contains(newTarget))
         {
             targets.Add(newTarget);
@@ -98,10 +95,8 @@ public class CameraFollow : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        // Dibujar una caja roja para visualizar los límites en los que se puede mover la cámara (su centro)
         Gizmos.color = Color.red;
         
-        // El ancho total jugable es (maxWidth - minWidth) y la altura es (maxHeight - minHeight)
         float width = maxWidth - minWidth;
         float height = maxHeight - minHeight;
         Vector3 center = new Vector3(minWidth + (width / 2f), minHeight + (height / 2f), transform.position.z);

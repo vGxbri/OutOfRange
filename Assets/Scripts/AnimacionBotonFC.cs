@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -34,8 +37,6 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
         }
 
         if (textoBoton != null) colorNormal = textoBoton.color;
-        
-        // Autocompletar AudioSource si no está asignado y el objeto está activo
         if (audioSource == null) audioSource = GetComponent<AudioSource>();
     }
 
@@ -78,7 +79,6 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
         DesactivarEfecto();
     }
 
-    // --- DETECTAR EL CLICK ---
     public void OnPointerClick(PointerEventData eventData)
     {
         ReproducirClick();
@@ -116,19 +116,12 @@ public class AnimacionBotonFC : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     void ReproducirSonido(AudioClip clip)
     {
-        // El problema es que si el botón se desactiva (ej: al cambiar de menú), 
-        // el AudioSource deja de funcionar inmediatamente.
-        // Como solución robusta, usamos PlayClipAtPoint para el CLICK si el source está en el propio botón,
-        // o PlayOneShot si el source es externo (está en la cámara o manager).
-
         if (audioSource != null && audioSource.gameObject.activeInHierarchy && audioSource.enabled)
         {
             audioSource.PlayOneShot(clip);
         }
         else
         {
-            // Fallback: Reproduce el sonido en la posición de la cámara para que no dependa del botón
-            // Esto crea un objeto temporal que sí suena aunque el menú se cierre.
             Vector3 posCámara = Camera.main != null ? Camera.main.transform.position : Vector3.zero;
             AudioSource.PlayClipAtPoint(clip, posCámara);
         }

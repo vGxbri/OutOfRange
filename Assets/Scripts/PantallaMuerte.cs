@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -43,7 +46,6 @@ public class PantallaMuerte : MonoBehaviour
     {
         if (MusicManager.instance != null)
         {
-            // Detener la música cuando el jugador muere
             MusicManager.instance.DetenerMusica();
         }
         StartCoroutine(SecuenciaMuerte());
@@ -51,10 +53,8 @@ public class PantallaMuerte : MonoBehaviour
 
     IEnumerator SecuenciaMuerte()
     {
-        // Esperar a que se vea la animación de muerte
         yield return new WaitForSeconds(esperaAntesDeMostrar);
 
-        // Reproducir sonido de Game Over
         if (audioSource != null && sonidoMuerte != null)
         {
             audioSource.PlayOneShot(sonidoMuerte);
@@ -70,7 +70,6 @@ public class PantallaMuerte : MonoBehaviour
             contenedorMuerte.SetActive(true);
         }
 
-        // Fade in
         float timer = 0f;
         while (timer < duracionFadeIn)
         {
@@ -82,7 +81,6 @@ public class PantallaMuerte : MonoBehaviour
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
 
-        // Seleccionar primer botón para mando
         if (primerBoton != null && EventSystem.current != null)
         {
             StartCoroutine(SeleccionarBotonConRetraso(primerBoton));

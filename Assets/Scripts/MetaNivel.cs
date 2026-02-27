@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using EasyTransition;
@@ -13,7 +16,7 @@ public class MetaNivel : MonoBehaviour
     private float tiempoInicio;
 
     [Header("Efectos Visuales")]
-    public GameObject animacionFondoDisponible; // Asigna el GameObject con la animación aquí
+    public GameObject animacionFondoDisponible;
     private bool animacionActivada = false;
     
     void Start()
@@ -21,13 +24,12 @@ public class MetaNivel : MonoBehaviour
         tiempoInicio = Time.time;
         if (animacionFondoDisponible != null)
         {
-            animacionFondoDisponible.SetActive(false); // Ocultar al empezar
+            animacionFondoDisponible.SetActive(false);
         }
     }
 
     void Update()
     {
-        // Comprobar constantemente si los enemigos han muerto para activar la animación de fondo
         if (!animacionActivada && animacionFondoDisponible != null)
         {
             VidaEnemigo[] todosLosEnemigos = FindObjectsOfType<VidaEnemigo>();
@@ -38,21 +40,19 @@ public class MetaNivel : MonoBehaviour
                 if (e != null && !e.EstaMuerto())
                 {
                     quedanVivos = true;
-                    break; // Cortamos el bucle, ya sabemos que queda al menos uno
+                    break;
                 }
             }
 
-            if (!quedanVivos && Time.time - tiempoInicio > 1f) // Pequeño margen para asegurarnos de que la escena haya cargado bien
+            if (!quedanVivos && Time.time - tiempoInicio > 1f)
             {
                 animacionActivada = true;
-                animacionFondoDisponible.SetActive(true); // Mostrar animación en loop
+                animacionFondoDisponible.SetActive(true);
                 
-                // Si la animación no empieza sola, intentamos forzarla habilitando el Animator
                 Animator animatorFondo = animacionFondoDisponible.GetComponent<Animator>();
                 if (animatorFondo != null)
                 {
-                    animatorFondo.enabled = true; // Nos aseguramos de que el Animator esté corriendo
-                    // Si tienes un trigger o nombre de estado específico, podrías ponerlo aquí, ej: animatorFondo.Play("NombreAnimacion");
+                    animatorFondo.enabled = true;
                 }
                 
                 Debug.Log("Todos los enemigos derrotados: Animación de la meta activada.");
@@ -60,25 +60,21 @@ public class MetaNivel : MonoBehaviour
         }
     }
 
-    // --- METODO MODIFICADO: Ahora se llama cuando un jugador "ataca" la piedra ---
     public void ActivarMeta(GameObject atacante)
     {
         if (nivelTerminado) return;
 
-        // Evitar disparos accidentales al spawnear (ej: si el ataque ocurre muy pronto)
         if (Time.time - tiempoInicio < 0.2f) 
         {
             Debug.LogWarning("MetaNivel ignorado por seguridad (demasiado pronto).");
             return;
         }
 
-        // --- LÓGICA: COMPROBAR ENEMIGOS ---
         VidaEnemigo[] todosLosEnemigos = FindObjectsOfType<VidaEnemigo>();
         int enemigosVivos = 0;
         
         foreach (var e in todosLosEnemigos)
         {
-            // Solo contamos los que no están muertos ni en proceso de morir
             if (e != null && !e.EstaMuerto())
             {
                 enemigosVivos++;
@@ -88,23 +84,19 @@ public class MetaNivel : MonoBehaviour
         if (enemigosVivos > 0)
         {
             Debug.Log($"<color=yellow>¡Aún quedan {enemigosVivos} enemigos!</color> Debes derrotarlos a todos antes de pasar.");
-            // Opcional: Aquí podrías activar un mensaje en pantalla para el usuario
             return;
         }
 
         Debug.Log("MetaNivel activada por un ataque de: " + atacante.name + " en pos: " + transform.position);
         nivelTerminado = true;
 
-        // --- LÓGICA: MOSTRAR UI DE NIVEL COMPLETADO ---
         MenuNivelCompletado menuCompletado = FindObjectOfType<MenuNivelCompletado>();
         if (menuCompletado != null)
         {
-            // Si existe el menú en la escena, le decimos que se muestre y él se encarga de cargar niveles
             menuCompletado.MostrarMenuCompletado();
             return;
         }
 
-        // --- LÓGICA ANTIGUA (Fallback si no hay menú de nivel completado en la escena) ---
         int proximoIndice = SceneManager.GetActiveScene().buildIndex + 1;
         int totalEscenas = SceneManager.sceneCountInBuildSettings;
 

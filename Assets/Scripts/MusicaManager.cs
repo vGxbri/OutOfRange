@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
@@ -21,7 +24,7 @@ public class MusicManager : MonoBehaviour
     public AudioClip musicaNivel5;
 
     [Header("Ajustes")]
-    public float tiempoFade = 1.0f; // Tiempo que tarda en cambiar de canción
+    public float tiempoFade = 1.0f;
 
     void Awake()
     {
@@ -30,8 +33,6 @@ public class MusicManager : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
 
-            // ESTA LÍNEA ES LA MAGIA:
-            // Busca automáticamente el componente en el mismo objeto si se te olvidó asignarlo
             if (audioSource == null)
             {
                 audioSource = GetComponent<AudioSource>();
@@ -55,7 +56,6 @@ public class MusicManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // IMPORTANTE: Asegúrate de que los nombres coincidan exactamente con tus escenas
         switch (scene.name)
         {
             case "Main_Menu":
@@ -84,11 +84,9 @@ public class MusicManager : MonoBehaviour
 
     IEnumerator CambiarMusicaSuave(AudioClip nuevaCancion)
     {
-        // Si ya está sonando esta canción, no hacemos nada
         if (audioSource.clip == nuevaCancion && audioSource.isPlaying) yield break;
 
-        // Fade Out (Bajar volumen) si está sonando algo
-        float startVolume = 1f; // asumiendo volumen maximo 1
+        float startVolume = 1f;
         if (audioSource.isPlaying)
         {
             startVolume = audioSource.volume;
@@ -103,7 +101,6 @@ public class MusicManager : MonoBehaviour
         audioSource.clip = nuevaCancion;
         audioSource.Play();
 
-        // Fade In (Subir volumen)
         audioSource.volume = 0f;
         while (audioSource.volume < 1f)
         {
@@ -128,6 +125,6 @@ public class MusicManager : MonoBehaviour
             yield return null;
         }
         audioSource.Stop();
-        audioSource.volume = 1f; // Reiniciar volumen para la próxima canción
+        audioSource.volume = 1f;
     }
 }

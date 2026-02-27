@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -20,9 +23,8 @@ public class InicializadorJugador : MonoBehaviour
 
     void Start()
     {
-        int indice = playerInput.playerIndex; // 0 para J1, 1 para J2
+        int indice = playerInput.playerIndex;
 
-        // 1. ASIGNACIÓN DE LÓGICA Y ANIMATOR
         if (indice == 0)
         {
             anim.runtimeAnimatorController = animatorJ1;
@@ -34,24 +36,15 @@ public class InicializadorJugador : MonoBehaviour
             movimiento.tieneDash = true;
         }
 
-        // 2. CONFIGURACIÓN DE CONTROLES (Sin errores de "Invalid User")
         ConfigurarEsquemaDeControl(indice);
-
-        // 3. POSICIONAMIENTO (Spawn)
         MoverASpawn(indice);
 
-        // --- NUEVA LÓGICA: REGISTRARSE EN LA CÁMARA ---
         CameraFollow camara = FindObjectOfType<CameraFollow>();
         if (camara != null)
         {
             camara.AddTarget(this.transform);
         }
 
-        // --- CORRECCIÓN DE MULTIJUGADOR LOCAL ---
-        // Unity PlayerInputManager, por defecto, intenta hacer la vida "más fácil" en multijugador local
-        // y CAMBIA MÁGICAMENTE la Layer de los jugadores (P1 -> Layer 8, P2 -> Layer 9...) 
-        // para que las cámaras de pantalla partida funcionen. Esto rompe nuestras colisiones enemigas.
-        // Forzamos manualmente que el Jugador vuelva a su Layer original (que en tu proyecto es la 7).
         RevertirLayer(gameObject, 7);
     }
 
@@ -66,8 +59,6 @@ public class InicializadorJugador : MonoBehaviour
 
     void ConfigurarEsquemaDeControl(int indice)
     {
-        // El esquema ya se asigna al hacer JoinPlayer en UnirseMismoTeclado.
-        // Este método es un fallback por si algo falla.
         if (playerInput.devices.Count > 0)
         {
             InputDevice dispositivo = playerInput.devices[0];
@@ -79,8 +70,6 @@ public class InicializadorJugador : MonoBehaviour
             }
             else if (dispositivo is Keyboard)
             {
-                // Si ambos usan teclado, J1=Izquierda, J2=Derecha
-                // Si solo uno usa teclado, ese usa Izquierda
                 int otroControl = PlayerPrefs.GetInt(indice == 0 ? "ControlJ2" : "ControlJ1", 0);
                 bool ambosUsanTeclado = (controlSeleccionado == 0 && otroControl == 0);
                 
@@ -88,7 +77,7 @@ public class InicializadorJugador : MonoBehaviour
                 if (ambosUsanTeclado)
                     esquema = (indice == 0) ? "Teclado_Izquierda" : "Teclado_Derecha";
                 else
-                    esquema = "Teclado_Solo"; // Solo uno usa teclado, usa A/D + W(salto) + Enter(ataque)
+                    esquema = "Teclado_Solo";
                 
                 playerInput.SwitchCurrentControlScheme(esquema, dispositivo);
             }
@@ -102,7 +91,6 @@ public class InicializadorJugador : MonoBehaviour
 
         if (spawn != null)
         {
-            // Solo copiar X e Y, mantener Z original para no salir del clipping de la cámara
             Vector3 pos = spawn.transform.position;
             pos.z = transform.position.z;
             transform.position = pos;

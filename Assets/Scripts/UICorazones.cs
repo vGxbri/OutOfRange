@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,7 +8,7 @@ using UnityEngine.UI;
 public class UICorazones : MonoBehaviour
 {
     [Header("Corazones Llenos (ordenados del 1 al 5)")]
-    public GameObject[] corazonesLlenos; // Arrastra los objetos corazon_lleno aquí
+    public GameObject[] corazonesLlenos;
 
     [Header("Efecto Parpadeo")]
     public int vecesParpadeo = 4;
@@ -16,7 +19,6 @@ public class UICorazones : MonoBehaviour
 
     void Start()
     {
-        // Obtener componentes Image de cada GameObject
         imagenesCorazones = new Image[corazonesLlenos.Length];
         for (int i = 0; i < corazonesLlenos.Length; i++)
         {

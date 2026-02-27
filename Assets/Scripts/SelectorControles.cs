@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
@@ -13,7 +16,7 @@ public class SelectorControles : MonoBehaviour
     public Image imgMandoJ2;
 
     [Header("Indicadores de Selección (esquinas)")]
-    public RectTransform[] esquinasTecladoJ1; // 4 esquinas: TL, TR, BL, BR
+    public RectTransform[] esquinasTecladoJ1;
     public RectTransform[] esquinasMandoJ1;
     public RectTransform[] esquinasTecladoJ2;
     public RectTransform[] esquinasMandoJ2;
@@ -23,11 +26,9 @@ public class SelectorControles : MonoBehaviour
     public float escalaActiva = 1f;
     public float escalaInactiva = 0.5f;
 
-    // 0 = Teclado, 1 = Mando
     private int seleccionJ1 = 0;
     private int seleccionJ2 = 0;
 
-    // Escala actual para animación suave
     private float[] escalaActualTecladoJ1 = new float[4];
     private float[] escalaActualMandoJ1 = new float[4];
     private float[] escalaActualTecladoJ2 = new float[4];
@@ -35,18 +36,15 @@ public class SelectorControles : MonoBehaviour
 
     void Start()
     {
-        // Cargar selección guardada (0 = teclado por defecto)
         seleccionJ1 = PlayerPrefs.GetInt("ControlJ1", 0);
         seleccionJ2 = PlayerPrefs.GetInt("ControlJ2", 0);
 
-        // Inicializar escalas inmediatamente (sin animación)
         InicializarEscalas();
         AplicarSeleccion();
     }
 
     void Update()
     {
-        // Animar esquinas suavemente
         AnimarEsquinas(esquinasTecladoJ1, escalaActualTecladoJ1, seleccionJ1 == 0);
         AnimarEsquinas(esquinasMandoJ1, escalaActualMandoJ1, seleccionJ1 == 1);
         AnimarEsquinas(esquinasTecladoJ2, escalaActualTecladoJ2, seleccionJ2 == 0);
@@ -75,11 +73,9 @@ public class SelectorControles : MonoBehaviour
         {
             if (esquinas[i] == null) continue;
 
-            // Animar escala
             escalasActuales[i] = Mathf.Lerp(escalasActuales[i], objetivo, Time.unscaledDeltaTime * velocidadAnimacion);
             esquinas[i].localScale = Vector3.one * escalasActuales[i];
 
-            // Animar color (solo opacidad)
             Image img = esquinas[i].GetComponent<Image>();
             if (img != null)
             {
@@ -92,7 +88,6 @@ public class SelectorControles : MonoBehaviour
 
     void AplicarSeleccion()
     {
-        // Ajustar opacidad de las imágenes principales
         SetAlpha(imgTecladoJ1, seleccionJ1 == 0 ? 1f : 0.4f);
         SetAlpha(imgMandoJ1, seleccionJ1 == 1 ? 1f : 0.4f);
         SetAlpha(imgTecladoJ2, seleccionJ2 == 0 ? 1f : 0.4f);
@@ -106,8 +101,6 @@ public class SelectorControles : MonoBehaviour
         c.a = alpha;
         img.color = c;
     }
-
-    // --- Métodos públicos para los botones ---
 
     public void SeleccionarTecladoJ1()
     {
@@ -151,7 +144,7 @@ public class SelectorControles : MonoBehaviour
             int control = (indice == 0) ? seleccionJ1 : seleccionJ2;
             MovimientoJugador mov = pi.GetComponent<MovimientoJugador>();
 
-            if (control == 1) // Mando
+            if (control == 1)
             {
                 if (Gamepad.current != null)
                 {
@@ -160,12 +153,11 @@ public class SelectorControles : MonoBehaviour
                 }
                 else
                 {
-                    // Congelar jugador hasta que se conecte un mando
                     if (mov != null) mov.enabled = false;
                     Debug.Log($"Jugador {indice + 1}: esperando mando...");
                 }
             }
-            else // Teclado
+            else
             {
                 if (Keyboard.current != null)
                 {
@@ -184,7 +176,7 @@ public class SelectorControles : MonoBehaviour
 
     void OnEnable()
     {
-        InputSystem.onDeviceChange -= OnDispositivoCambiado; // evitar duplicados
+        InputSystem.onDeviceChange -= OnDispositivoCambiado;
         InputSystem.onDeviceChange += OnDispositivoCambiado;
     }
 
@@ -201,8 +193,6 @@ public class SelectorControles : MonoBehaviour
             AplicarControlesAJugadores();
         }
     }
-
-    // --- Acceso público para otros scripts ---
 
     public bool Jugador1UsaMando() => seleccionJ1 == 1;
     public bool Jugador2UsaMando() => seleccionJ2 == 1;

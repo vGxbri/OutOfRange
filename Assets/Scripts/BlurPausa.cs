@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 
 [RequireComponent(typeof(Camera))]
@@ -43,15 +46,14 @@ public class BlurPausa : MonoBehaviour
 
         RenderTexture temp = RenderTexture.GetTemporary(src.width, src.height);
 
-        // Aplicar blur en varias pasadas para mayor intensidad
         for (int i = 0; i < pasadas; i++)
         {
             if (i == 0)
-                Graphics.Blit(src, temp, materialBlur, 0);   // Horizontal
+                Graphics.Blit(src, temp, materialBlur, 0);
             else
                 Graphics.Blit(dest, temp, materialBlur, 0);
 
-            Graphics.Blit(temp, dest, materialBlur, 1);      // Vertical
+            Graphics.Blit(temp, dest, materialBlur, 1);
         }
 
         RenderTexture.ReleaseTemporary(temp);

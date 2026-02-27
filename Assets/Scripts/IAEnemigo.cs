@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using System.Collections.Generic;
 
@@ -13,8 +16,8 @@ public class IAEnemigo : MonoBehaviour
     [Header("Detección")]
     public float rangoDeteccion = 5f;
     public float rangoDeteccionTrasera = 1.5f;
-    public float alturaDeteccion = 1.2f;      // Incrementado para cubrir más área vertical
-    public float offsetYDeteccion = -0.3f;    // Bajado ligeramente para detectar colisionadores en el suelo
+    public float alturaDeteccion = 1.2f;
+    public float offsetYDeteccion = -0.3f;
     public float rangoAtaque = 1.2f;
     public Vector2 offsetAtaque = Vector2.zero;
     public LayerMask capaJugador;
@@ -72,15 +75,13 @@ public class IAEnemigo : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         capsuleCollider = GetComponent<CapsuleCollider2D>();
-        audioSource = GetComponent<AudioSource>(); // Intentar obtener el AudioSource
+        audioSource = GetComponent<AudioSource>();
         
         tiempoUltimoAtaque = -cooldownAtaque;
         timerEstado = VariarTiempo(Random.Range(tiempoCaminarMin, tiempoCaminarMax));
 
-        // Masa alta para que los jugadores no lo empujen
         if (rb != null) rb.mass = 100f;
 
-        // Fricción 0 para que los jugadores no se queden enganchados al saltar
         Collider2D col = GetComponent<Collider2D>();
         if (col != null)
         {
@@ -90,7 +91,6 @@ public class IAEnemigo : MonoBehaviour
             col.sharedMaterial = matSinFriccion;
         }
 
-        // Los enemigos no colisionan entre sí
         Physics2D.IgnoreLayerCollision(gameObject.layer, gameObject.layer, true);
     }
 
@@ -122,7 +122,6 @@ public class IAEnemigo : MonoBehaviour
 
     void Update()
     {
-        // Esperar a que el Multiplayer Manager haya cargado ambos jugadores
         if (!GameManager.JuegoIniciado)
         {
             rb.velocity = new Vector2(0, rb.velocity.y);
@@ -180,7 +179,6 @@ public class IAEnemigo : MonoBehaviour
         ActualizarDireccionVisual();
     }
 
-    // Devuelve el jugador más cercano si lo encuentra, null si no
     Transform BuscarJugador()
     {
         Transform masCercano = null;
@@ -189,15 +187,12 @@ public class IAEnemigo : MonoBehaviour
         Vector2 centroFrontal = (Vector2)transform.position + new Vector2(direccion * rangoDeteccion / 2f, offsetYDeteccion);
         Vector2 tamañoFrontal = new Vector2(rangoDeteccion, alturaDeteccion * 2f);
 
-        // Detección frontal normal filtrada por capa
         Collider2D[] frontales = Physics2D.OverlapBoxAll(centroFrontal, tamañoFrontal, 0f, capaJugador);
 
-        // Detección trasera normal filtrada por capa
         Vector2 centroTrasero = (Vector2)transform.position + new Vector2(-direccion * rangoDeteccionTrasera / 2f, offsetYDeteccion);
         Vector2 tamañoTrasero = new Vector2(rangoDeteccionTrasera, alturaDeteccion * 2f);
         Collider2D[] traseros = Physics2D.OverlapBoxAll(centroTrasero, tamañoTrasero, 0f, capaJugador);
 
-        // Juntar todos los colliders detectados en ambas cajas
         List<Collider2D> todosLosDetectados = new List<Collider2D>();
         todosLosDetectados.AddRange(frontales);
         todosLosDetectados.AddRange(traseros);
@@ -251,7 +246,6 @@ public class IAEnemigo : MonoBehaviour
 
     void Perseguir()
     {
-        // Re-evaluar dinámicamente si hay otro jugador más cerca mientras persigue
         Transform objetivoMasCercanoAhora = BuscarJugador();
         if (objetivoMasCercanoAhora != null)
         {
@@ -267,11 +261,9 @@ public class IAEnemigo : MonoBehaviour
         float distancia = Vector2.Distance(transform.position, objetivoActual.position);
         float distX = Mathf.Abs(objetivoActual.position.x - transform.position.x);
         
-        // Calculamos la distancia vertical
         float centroDY = transform.position.y + offsetYDeteccion;
         float distY = Mathf.Abs(objetivoActual.position.y - centroDY);
 
-        // Tolerancia vertical con un levísimo margen (0.2f) para evitar parpadeos si el jugador está justo en el borde de la caja
         if (distY > (alturaDeteccion + 0.2f))
         {
             objetivoActual = null;
@@ -279,9 +271,6 @@ public class IAEnemigo : MonoBehaviour
             return;
         }
 
-        // ¿Está en rango de ataque?
-        // Usamos SOLO la distancia horizontal. La distancia vertical ya está validada arriba en esta misma función.
-        // Si usamos dist Y, la diferencia entre los pies del jugador y el centro del enemigo arruina el ataque.
         if (distX <= rangoAtaque)
         {
             if (Time.time - tiempoUltimoAtaque >= cooldownAtaque)
@@ -291,7 +280,6 @@ public class IAEnemigo : MonoBehaviour
             }
         }
 
-        // ¿Perdimos al objetivo horizontalmente?
         float dirHaciaJugador = objetivoActual.position.x - transform.position.x;
         bool estaDelante = (dirHaciaJugador * direccion) > 0;
 
@@ -303,7 +291,6 @@ public class IAEnemigo : MonoBehaviour
                 tiempoPerdiendoObjetivo = Time.time;
             }
 
-            // Memoria de agresión: sigue persiguiendo unos segundos
             if (Time.time - tiempoPerdiendoObjetivo > memoriaAgresion)
             {
                 objetivoActual = null;
@@ -316,10 +303,8 @@ public class IAEnemigo : MonoBehaviour
             objetivoFueraDeRango = false;
         }
 
-        // Moverse hacia el objetivo
         direccion = dirHaciaJugador > 0 ? 1 : -1;
 
-        // Comprobar pared y borde antes de moverse
         Vector2 posicionBorde = (Vector2)transform.position + new Vector2(direccion * distanciaDeteccionPared, 0);
         RaycastHit2D hitSuelo = Physics2D.Raycast(posicionBorde, Vector2.down, distanciaDeteccionBorde, capaSuelo);
         RaycastHit2D hitPared = Physics2D.Raycast(transform.position, Vector2.right * direccion, distanciaDeteccionPared, capaSuelo);
@@ -352,28 +337,22 @@ public class IAEnemigo : MonoBehaviour
 
         if (animator != null) animator.SetTrigger("Attack");
 
-        // Reproducir sonido de ataque
         if (audioSource != null && sonidoAtaque != null)
         {
             audioSource.PlayOneShot(sonidoAtaque);
         }
 
-        // Calcular posición de ataque con offset
         Vector2 posAtaque = (Vector2)transform.position + offsetAtaque;
 
-        // Detectar y dañar jugadores en rango de ataque
         Collider2D[] jugadores = Physics2D.OverlapCircleAll(posAtaque, rangoAtaque, capaJugador);
         foreach (var col in jugadores)
         {
-            // Daño compartido
             if (VidaCompartida.Instancia != null)
                 VidaCompartida.Instancia.RecibirDaño(dañoAtaque);
 
-            // Hit animation en el jugador
             MovimientoJugador mov = col.GetComponent<MovimientoJugador>();
             if (mov != null) mov.RecibirHit();
 
-            // Knockback al jugador
             Rigidbody2D rbJugador = col.GetComponent<Rigidbody2D>();
             if (rbJugador != null)
             {
@@ -389,12 +368,10 @@ public class IAEnemigo : MonoBehaviour
         ActualizarAnimaciones();
     }
 
-    // Llamado desde VidaEnemigo
     public void RecibirGolpe()
     {
         estadoActual = Estado.Golpeado;
         timerEstado = Time.time + VariarTiempo(tiempoStun);
-        // No reseteamos velocidad para que el knockback de VidaEnemigo se aplique
     }
 
     void CambiarEstado(Estado nuevo)
@@ -436,7 +413,6 @@ public class IAEnemigo : MonoBehaviour
     {
         float escalaObjetivo = Mathf.Abs(transform.localScale.x) * direccion;
 
-        // Compensar posición solo cuando realmente cambia la dirección
         if (Mathf.Sign(transform.localScale.x) != Mathf.Sign(escalaObjetivo) && capsuleCollider != null)
         {
             float compensacion = 2f * capsuleCollider.offset.x * transform.localScale.x;
@@ -467,22 +443,18 @@ public class IAEnemigo : MonoBehaviour
     {
         float dir = Application.isPlaying ? direccion : (transform.localScale.x > 0 ? 1f : -1f);
 
-        // Rango de detección frontal (solo hacia delante)
         Gizmos.color = Color.yellow;
         Vector3 centroFrontal = transform.position + new Vector3(dir * rangoDeteccion / 2f, offsetYDeteccion, 0f);
         Gizmos.DrawWireCube(centroFrontal, new Vector3(rangoDeteccion, alturaDeteccion * 2f, 0f));
 
-        // Rango de detección trasera (solo hacia atrás)
         Gizmos.color = new Color(1f, 1f, 0f, 0.3f);
         Vector3 centroTrasero = transform.position + new Vector3(-dir * rangoDeteccionTrasera / 2f, offsetYDeteccion, 0f);
         Gizmos.DrawWireCube(centroTrasero, new Vector3(rangoDeteccionTrasera, alturaDeteccion * 2f, 0f));
 
-        // Rango de ataque
         Gizmos.color = Color.red;
         Vector2 posAtaque = (Vector2)transform.position + offsetAtaque;
         Gizmos.DrawWireSphere(posAtaque, rangoAtaque);
 
-        // Detector de borde
         Gizmos.color = Color.green;
         Vector2 posicionBorde = (Vector2)transform.position + new Vector2(dir * distanciaDeteccionPared, 0);
         Gizmos.DrawLine(posicionBorde, posicionBorde + Vector2.down * distanciaDeteccionBorde);

@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
@@ -24,7 +27,6 @@ public class UnirseMismoTeclado : MonoBehaviour
 
     private PlayerInputManager manager;
 
-    // Control: cuántos jugadores se han unido de teclado (para saber si el siguiente es Izquierda o Derecha)
     private int jugadoresTecladoUnidos = 0;
     private bool j1Unido = false;
     private bool j2Unido = false;
@@ -47,7 +49,6 @@ public class UnirseMismoTeclado : MonoBehaviour
         
         if (ultimoNivelCargado != escenaActual)
         {
-            // Es la primera vez que entramos a este nivel
             ultimoNivelCargado = escenaActual;
             
             if (contenedorComienzoPartida != null) contenedorComienzoPartida.SetActive(true);
@@ -58,7 +59,6 @@ public class UnirseMismoTeclado : MonoBehaviour
         }
         else
         {
-            // El nivel se ha reiniciado
             if (contenedorComienzoPartida != null) contenedorComienzoPartida.SetActive(false);
             IniciarAutomaticamente();
         }
@@ -71,27 +71,25 @@ public class UnirseMismoTeclado : MonoBehaviour
 
         bool j1UsaEnter = (controlJ1 == 0 && controlJ2 == 1);
 
-        // --- Configurar J1 ---
         if (j1ImagenTecla != null)
         {
-            if (controlJ1 == 0) // Teclado
+            if (controlJ1 == 0)
             {
                 j1ImagenTecla.sprite = j1UsaEnter ? spriteEnter : spriteEspacio;
             }
-            else // Mando
+            else
             {
                 j1ImagenTecla.sprite = spriteMandoA;
             }
         }
 
-        // --- Configurar J2 ---
         if (j2ImagenTecla != null)
         {
-            if (controlJ2 == 0) // Teclado
+            if (controlJ2 == 0)
             {
                 j2ImagenTecla.sprite = spriteEnter;
             }
-            else // Mando
+            else
             {
                 j2ImagenTecla.sprite = spriteMandoA;
             }
@@ -103,8 +101,7 @@ public class UnirseMismoTeclado : MonoBehaviour
         int controlJ1 = PlayerPrefs.GetInt("ControlJ1", 0);
         int controlJ2 = PlayerPrefs.GetInt("ControlJ2", 0);
 
-        // --- JUGADOR 1 ---
-        if (controlJ1 == 0) // Teclado
+        if (controlJ1 == 0)
         {
             if (Keyboard.current != null)
             {
@@ -115,7 +112,7 @@ public class UnirseMismoTeclado : MonoBehaviour
                 j1Unido = true;
             }
         }
-        else // Mando
+        else
         {
             if (Gamepad.current != null)
             {
@@ -125,10 +122,9 @@ public class UnirseMismoTeclado : MonoBehaviour
             }
         }
 
-        // --- JUGADOR 2 ---
         if (j1Unido)
         {
-            if (controlJ2 == 0) // Teclado
+            if (controlJ2 == 0)
             {
                 if (Keyboard.current != null)
                 {
@@ -139,7 +135,7 @@ public class UnirseMismoTeclado : MonoBehaviour
                     j2Unido = true;
                 }
             }
-            else // Mando
+            else
             {
                 Gamepad mando = ObtenerMandoParaJ2(controlJ1);
                 if (mando != null)
@@ -154,20 +150,17 @@ public class UnirseMismoTeclado : MonoBehaviour
 
     void Update()
     {
-        // Leer selección del menú (0 = teclado, 1 = mando)
         int controlJ1 = PlayerPrefs.GetInt("ControlJ1", 0);
         int controlJ2 = PlayerPrefs.GetInt("ControlJ2", 0);
 
-        // Actualizar iconos cada frame para que refleje cambios si abren el menú de opciones antes de empezar
         if (!GameManager.JuegoIniciado)
         {
             ConfigurarIconosUI();
         }
 
-        // --- JUGADOR 1 ---
         if (!j1Unido)
         {
-            if (controlJ1 == 0) // Teclado
+            if (controlJ1 == 0)
             {
                 bool j1UsaEnter = (controlJ1 == 0 && controlJ2 == 1);
                 bool presionoBoton = false;
@@ -187,7 +180,7 @@ public class UnirseMismoTeclado : MonoBehaviour
                     if (contenedorJ1 != null) contenedorJ1.SetActive(false);
                 }
             }
-            else // Mando
+            else
             {
                 if (Gamepad.current != null && Gamepad.current.buttonSouth.wasPressedThisFrame)
                 {
@@ -199,10 +192,9 @@ public class UnirseMismoTeclado : MonoBehaviour
             }
         }
 
-        // --- JUGADOR 2 ---
         if (!j2Unido && j1Unido)
         {
-            if (controlJ2 == 0) // Teclado
+            if (controlJ2 == 0)
             {
                 if (Keyboard.current != null && Keyboard.current.enterKey.wasPressedThisFrame)
                 {
@@ -214,9 +206,8 @@ public class UnirseMismoTeclado : MonoBehaviour
                     if (contenedorJ2 != null) contenedorJ2.SetActive(false);
                 }
             }
-            else // Mando
+            else
             {
-                // Si J1 también usa mando, necesitamos un SEGUNDO mando
                 Gamepad mando = ObtenerMandoParaJ2(controlJ1);
                 if (mando != null && mando.buttonSouth.wasPressedThisFrame)
                 {
@@ -228,7 +219,6 @@ public class UnirseMismoTeclado : MonoBehaviour
             }
         }
 
-        // Ocultar contenedor global si ambos están unidos
         if (j1Unido && j2Unido && contenedorComienzoPartida != null && contenedorComienzoPartida.activeSelf)
         {
             contenedorComienzoPartida.SetActive(false);
@@ -239,16 +229,13 @@ public class UnirseMismoTeclado : MonoBehaviour
     {
         if (controlJ1 == 0)
         {
-            // J1 usa teclado → J2 puede usar cualquier mando
             return Gamepad.current;
         }
         else
         {
-            // J1 también usa mando → J2 necesita un mando DIFERENTE
-            // Si solo hay 1 mando conectado, Gamepad.all tendrá solo uno y no podrán ambos usar mando
             if (Gamepad.all.Count >= 2)
             {
-                return Gamepad.all[1]; // El segundo mando
+                return Gamepad.all[1];
             }
             return null;
         }

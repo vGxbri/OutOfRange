@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
@@ -30,16 +33,13 @@ public class CreditosScroll : MonoBehaviour
     {
         if (contenidoCreditos == null || mascaraVisible == null) yield break;
 
-        // Posición temporal fuera de vista mientras calculamos
         contenidoCreditos.anchoredPosition = new Vector2(contenidoCreditos.anchoredPosition.x, -10000f);
 
-        // Esperar a que el sistema de UI de Unity se actualice
         yield return new WaitForEndOfFrame();
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(contenidoCreditos);
         limiteSuperior = contenidoCreditos.rect.height;
         
-        // Empezar justo debajo de la máscara
         posicionActualY = -mascaraVisible.rect.height;
         contenidoCreditos.anchoredPosition = new Vector2(contenidoCreditos.anchoredPosition.x, posicionActualY);
         

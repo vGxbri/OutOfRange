@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,7 +24,6 @@ public class ManagerOpciones : MonoBehaviour
 
     void Start()
     {
-        // Cargar preferencias guardadas (todo activo por defecto)
         musicaActiva = PlayerPrefs.GetInt("Musica", 1) == 1;
         efectosActivos = PlayerPrefs.GetInt("Efectos", 1) == 1;
         pantallaCompleta = PlayerPrefs.GetInt("PantallaCompleta", Screen.fullScreen ? 1 : 0) == 1;
@@ -31,8 +33,6 @@ public class ManagerOpciones : MonoBehaviour
         AplicarPantallaCompleta();
         ActualizarSwitches();
     }
-
-    // --- Métodos públicos para los botones ---
 
     public void ToggleMusica()
     {
@@ -61,11 +61,6 @@ public class ManagerOpciones : MonoBehaviour
         ActualizarSwitches();
     }
 
-    // --- Aplicar cambios ---
-
-    void AplicarMusica()
-    {
-        // Buscar todas las AudioSources con tag "Music" o ajustar volumen global
         AudioSource[] fuentes = FindObjectsOfType<AudioSource>();
         foreach (var fuente in fuentes)
         {
@@ -76,11 +71,8 @@ public class ManagerOpciones : MonoBehaviour
 
     void AplicarEfectos()
     {
-        // Los efectos de sonido se comprueban antes de reproducir
-        // Guardamos en PlayerPrefs y los scripts de sonido lo leen
         AudioListener.volume = efectosActivos ? 1f : 0f;
 
-        // Si la música está activa, restaurar sus fuentes
         if (musicaActiva)
         {
             AudioSource[] fuentes = FindObjectsOfType<AudioSource>();
@@ -97,8 +89,6 @@ public class ManagerOpciones : MonoBehaviour
         Screen.fullScreen = pantallaCompleta;
     }
 
-    // --- Actualizar visuales ---
-
     void ActualizarSwitches()
     {
         if (switchMusicaOn != null) switchMusicaOn.SetActive(musicaActiva);
@@ -111,7 +101,6 @@ public class ManagerOpciones : MonoBehaviour
         if (switchPantallaOff != null) switchPantallaOff.SetActive(!pantallaCompleta);
     }
 
-    // --- Acceso público ---
     public bool MusicaActiva() => musicaActiva;
     public bool EfectosActivos() => efectosActivos;
 }

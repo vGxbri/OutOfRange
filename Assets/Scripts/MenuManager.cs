@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using EasyTransition;
@@ -46,7 +49,7 @@ public class MenuManager : MonoBehaviour
         if (contenedorControles != null) contenedorControles.SetActive(false);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
         if (contenedorConfirmarNuevaPartida != null) contenedorConfirmarNuevaPartida.SetActive(false);
-        if (contenedorCreditos != null) contenedorCreditos.SetActive(false); // <-- AÑADIDO
+        if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
         estadoActual = EstadoMenu.Principal;
 
         if (botonContinuar != null)
@@ -59,7 +62,6 @@ public class MenuManager : MonoBehaviour
             botonNuevaPartida.SetActive(true);
         }
 
-        // Seleccionar primer botón para mando/teclado con un pequeño retraso
         if (UnityEngine.EventSystems.EventSystem.current != null)
         {
             if (botonContinuar != null && botonContinuar.activeSelf)
@@ -82,8 +84,6 @@ public class MenuManager : MonoBehaviour
         if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
         estadoActual = EstadoMenu.Controles;
 
-        // Aquí podrías seleccionar el primer botón del panel de controles si lo tuvieras referenciado,
-        // por ejemplo un botón de "Volver"
         if (UnityEngine.EventSystems.EventSystem.current != null && contenedorControles != null)
         {
             UnityEngine.UI.Button primerBoton = contenedorControles.GetComponentInChildren<UnityEngine.UI.Button>();
@@ -103,7 +103,6 @@ public class MenuManager : MonoBehaviour
         if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
         estadoActual = EstadoMenu.Opciones;
 
-        // Aquí podrías seleccionar el primer botón del panel de opciones si lo tuvieras referenciado
         if (UnityEngine.EventSystems.EventSystem.current != null && contenedorOpciones != null)
         {
             UnityEngine.UI.Button primerBoton = contenedorOpciones.GetComponentInChildren<UnityEngine.UI.Button>();
@@ -121,12 +120,10 @@ public class MenuManager : MonoBehaviour
         if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
         if (contenedorConfirmarNuevaPartida != null) contenedorConfirmarNuevaPartida.SetActive(false);
 
-        // Activamos el panel de créditos
         if (contenedorCreditos != null) contenedorCreditos.SetActive(true);
 
         estadoActual = EstadoMenu.Creditos;
 
-        // Aquí podrías seleccionar el primer botón del panel de créditos si lo tuvieras referenciado
         if (UnityEngine.EventSystems.EventSystem.current != null && contenedorCreditos != null)
         {
             UnityEngine.UI.Button primerBoton = contenedorCreditos.GetComponentInChildren<UnityEngine.UI.Button>();
@@ -137,18 +134,14 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    // --- BOTÓN "NUEVA PARTIDA" ---
     public void OnNuevaPartida()
     {
         if (GestorGuardado.HayPartidaGuardada())
         {
-            // Hay partida guardada → preguntar confirmación
             contenedorBotones.SetActive(false);
             contenedorConfirmarNuevaPartida.SetActive(true);
             estadoActual = EstadoMenu.ConfirmarNuevaPartida;
 
-            // Seleccionar primer botón para mando/teclado en confirmación (ej. botón Cancelar o Confirmar)
-            // Asumiendo que podemos buscarlo en los hijos o simplemente seleccionamos el primero interactable
             if (UnityEngine.EventSystems.EventSystem.current != null)
             {
                 UnityEngine.UI.Button primerBotonConfirmacion = contenedorConfirmarNuevaPartida.GetComponentInChildren<UnityEngine.UI.Button>();
@@ -160,33 +153,27 @@ public class MenuManager : MonoBehaviour
         }
         else
         {
-            // No hay partida → ir directo al tutorial
             IniciarNuevaPartida();
         }
     }
 
-    // --- BOTONES DEL ContenedorConfirmarNuevaPartida ---
     public void ConfirmarNuevaPartida()
     {
-        // El jugador dijo "Sí" → borrar y empezar
         GestorGuardado.BorrarPartida();
         IniciarNuevaPartida();
     }
 
     public void CancelarNuevaPartida()
     {
-        // El jugador dijo "No" → volver al menú
         MostrarMenu();
     }
 
-    // --- BOTÓN "CONTINUAR" ---
     public void OnContinuar()
     {
         string escena = GestorGuardado.ObtenerEscenaGuardada();
         TransitionManager.Instance().Transition(escena, transicion, 0f);
     }
 
-    // --- BOTÓN "SALIR" ---
     public void Salir()
     {
         #if UNITY_EDITOR
@@ -196,7 +183,6 @@ public class MenuManager : MonoBehaviour
         #endif
     }
 
-    // --- UTILIDAD ---
     private void OcultarTodosLosPaneles()
     {
         if (contenedorBotones != null) contenedorBotones.SetActive(false);
@@ -214,8 +200,6 @@ public class MenuManager : MonoBehaviour
 
     private System.Collections.IEnumerator SeleccionarBotonConRetraso(GameObject boton)
     {
-        // Esperamos un frame para asegurarnos que la UI se ha activado por completo
-        // y el EventSystem ha limpiado el estado anterior.
         yield return null;
         if (UnityEngine.EventSystems.EventSystem.current != null && boton != null)
         {

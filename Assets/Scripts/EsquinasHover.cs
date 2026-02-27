@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;

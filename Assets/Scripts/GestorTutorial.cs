@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -20,14 +23,12 @@ public class GestorTutorial : MonoBehaviour
     [Range(0.1f, 1f)]
     public float duracionAnimacion = 0.3f;
 
-    private bool estaMostrando = false; // Controla si el modal está activo
+    private bool estaMostrando = false;
 
     void Update()
     {
-        // Si el modal está activo y pulsamos Espacio o Enter, lo cerramos
         if (estaMostrando && panelModal.activeSelf)
         {
-            // Usamos GetKeyDown para que solo responda al toque
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))
             {
                 CerrarModal();
@@ -42,7 +43,6 @@ public class GestorTutorial : MonoBehaviour
         textoTitulo.text = titulo;
         textoContenido.text = contenido;
 
-        // Configurar imagen del tutorial
         if (imagenTutorial != null)
         {
             Sprite spriteAMostrar = imagen != null ? imagen : imagenPorDefecto;
@@ -57,20 +57,14 @@ public class GestorTutorial : MonoBehaviour
             }
         }
 
-        // Animación de entrada (escala de 0 a 1)
         StopAllCoroutines();
         StartCoroutine(AnimarEntrada());
 
-        // Pausamos el juego
         Time.timeScale = 0f;
 
-        // Seleccionar automáticamente el propio panel o un botón imaginario (o nada si vamos por Input)
-        // Para asegurar que si el juego tiene EventSystem, no se quede en un estado raro
         if (UnityEngine.EventSystems.EventSystem.current != null)
         {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);
-            // Si el modal tuviera un botón, lo seleccionaríamos aquí
-            // UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(botonCerrar);
         }
     }
 
@@ -93,9 +87,8 @@ public class GestorTutorial : MonoBehaviour
             tiempo += Time.unscaledDeltaTime;
             float progreso = tiempo / duracionAnimacion;
 
-            // Ease Out Back: da un efecto de "rebote" medieval
             float t = 1f - (1f - progreso) * (1f - progreso);
-            t = t + (t - t * t) * 0.5f; // Pequeño overshoot
+            t = t + (t - t * t) * 0.5f;
 
             panelModal.transform.localScale = Vector3.LerpUnclamped(Vector3.zero, Vector3.one, t);
             yield return null;
@@ -112,7 +105,7 @@ public class GestorTutorial : MonoBehaviour
         {
             tiempo += Time.unscaledDeltaTime;
             float progreso = tiempo / (duracionAnimacion * 0.5f);
-            float t = progreso * progreso; // Ease In
+            float t = progreso * progreso;
 
             panelModal.transform.localScale = Vector3.Lerp(Vector3.one, Vector3.zero, t);
             yield return null;
@@ -121,10 +114,8 @@ public class GestorTutorial : MonoBehaviour
         panelModal.transform.localScale = Vector3.one;
         panelModal.SetActive(false);
 
-        // Reanudamos el juego
         Time.timeScale = 1f;
         
-        // Limpiar selección
         if (UnityEngine.EventSystems.EventSystem.current != null)
         {
             UnityEngine.EventSystems.EventSystem.current.SetSelectedGameObject(null);

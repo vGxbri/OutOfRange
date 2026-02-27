@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 
 public class DañoContacto : MonoBehaviour
@@ -17,21 +20,18 @@ public class DañoContacto : MonoBehaviour
 
         if (otro.CompareTag("Player"))
         {
-            // 1. Daño a la vida compartida
             if (VidaCompartida.Instancia != null)
             {
                 VidaCompartida.Instancia.RecibirDaño(daño);
                 ultimoTiempoDaño = Time.time;
             }
 
-            // 2. Hit animation en el jugador específico
             MovimientoJugador movimiento = otro.GetComponent<MovimientoJugador>();
             if (movimiento != null)
             {
                 movimiento.RecibirHit();
             }
 
-            // 3. Knockback al jugador
             Rigidbody2D rbJugador = otro.GetComponent<Rigidbody2D>();
             if (rbJugador != null)
             {

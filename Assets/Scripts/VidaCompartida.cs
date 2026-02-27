@@ -1,3 +1,6 @@
+// Gabriel Francisque Almarcha Martínez
+// Jorge Maqueda Miguel
+
 using UnityEngine;
 using System;
 
@@ -38,7 +41,6 @@ public class VidaCompartida : MonoBehaviour
         {
             Debug.Log("GAME OVER");
 
-            // Matar a todos los jugadores
             MovimientoJugador[] jugadores = FindObjectsOfType<MovimientoJugador>();
             foreach (var j in jugadores)
             {
