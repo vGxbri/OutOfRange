@@ -61,6 +61,8 @@ public class ManagerOpciones : MonoBehaviour
         ActualizarSwitches();
     }
 
+    void AplicarMusica()
+    {
         AudioSource[] fuentes = FindObjectsOfType<AudioSource>();
         foreach (var fuente in fuentes)
         {

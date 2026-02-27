@@ -178,8 +178,10 @@ public class MenuManager : MonoBehaviour
     {
         #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-        #else
+        #elif !UNITY_WEBGL
         Application.Quit();
+        #else
+        Debug.Log("Salir deshabilitado en WebGL");
         #endif
     }
 
