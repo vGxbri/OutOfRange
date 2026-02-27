@@ -9,11 +9,26 @@ public class ZonaMuerte : MonoBehaviour
         // Comprobamos si lo que cayó es el Jugador
         if (collision.CompareTag("Player"))
         {
-            // Reinicia la escena actual
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
-            // Si tienes un sistema de vidas o respawn, 
-            // aquí llamarías a la función de "PerderVida()"
+            if (VidaCompartida.Instancia != null)
+            {
+                // Quitar todas las vidas para provocar el Game Over y mostrar el ContenedorMuerte
+                VidaCompartida.Instancia.RecibirDaño(VidaCompartida.Instancia.ObtenerVidas());
+            }
+            else
+            {
+                // Fallback por si no hay VidaCompartida en la escena
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            }
+        }
+        else
+        {
+            // Si no es el jugador, comprobamos si es un enemigo para matarlo
+            VidaEnemigo vidaEnemigo = collision.GetComponent<VidaEnemigo>();
+            if (vidaEnemigo != null)
+            {
+                // Le hacemos daño masivo para asegurar que se ejecute su efecto de muerte
+                vidaEnemigo.RecibirDaño(9999);
+            }
         }
     }
 }
