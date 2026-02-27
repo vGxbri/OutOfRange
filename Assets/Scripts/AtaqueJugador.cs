@@ -25,12 +25,20 @@ public class AtaqueJugador : MonoBehaviour
     public void EjecutarAtaque()
     {
         Golpear(dañoAtaque, rangoAtaque);
+    }
+
+    public void EjecutarSonidoAtaque()
+    {
         audioS.PlayOneShot(ataqueBasico);
     }
 
     public void EjecutarAtaquePesado()
     {
         Golpear(dañoAtaquePesado, rangoAtaquePesado);
+    }
+
+    public void EjecutarSonidoAtaquePesado()
+    {
         audioS.PlayOneShot(ataqueFuerte);
     }
 

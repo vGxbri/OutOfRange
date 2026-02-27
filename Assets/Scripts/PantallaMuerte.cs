@@ -12,6 +12,10 @@ public class PantallaMuerte : MonoBehaviour
     [Header("Fade In")]
     public float duracionFadeIn = 1f;
     public float esperaAntesDeMostrar = 1.5f;
+    
+    [Header("Sonidos")]
+    public AudioSource audioSource;
+    public AudioClip sonidoMuerte;
 
     private CanvasGroup canvasGroup;
 
@@ -49,6 +53,12 @@ public class PantallaMuerte : MonoBehaviour
     {
         // Esperar a que se vea la animación de muerte
         yield return new WaitForSeconds(esperaAntesDeMostrar);
+
+        // Reproducir sonido de Game Over
+        if (audioSource != null && sonidoMuerte != null)
+        {
+            audioSource.PlayOneShot(sonidoMuerte);
+        }
 
         Time.timeScale = 0f;
 

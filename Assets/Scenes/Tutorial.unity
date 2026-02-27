@@ -6309,6 +6309,8 @@ MonoBehaviour:
   tiempoFadeIn: 0.5
   transicion: {fileID: 11400000, guid: 023ec633a2fd0dc40839c1aa7c188a43, type: 2}
   delayCarga: 0.5
+  audioSource: {fileID: 0}
+  sonidoVictoria: {fileID: 0}
 --- !u!1 &762564819
 GameObject:
   m_ObjectHideFlags: 0
@@ -6942,8 +6944,8 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 1752235101
-  m_SortingLayer: 8
+  m_SortingLayerID: -15758581
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Sprite: {fileID: -428828595, guid: ac8df4f43569abc42946096a0318e778, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}

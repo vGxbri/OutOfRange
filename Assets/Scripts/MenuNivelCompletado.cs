@@ -18,6 +18,10 @@ public class MenuNivelCompletado : MonoBehaviour
     public TransitionSettings transicion;
     public float delayCarga = 0.5f;
 
+    [Header("Sonidos")]
+    public AudioSource audioSource;
+    public AudioClip sonidoVictoria;
+
     private bool nivelCompletado = false;
     private CanvasGroup canvasGroup;
 
@@ -57,6 +61,12 @@ public class MenuNivelCompletado : MonoBehaviour
             if (usarFadeIn && canvasGroup != null)
             {
                 StartCoroutine(FadeInRutina());
+            }
+
+            // Reproducir sonido de victoria
+            if (audioSource != null && sonidoVictoria != null)
+            {
+                audioSource.PlayOneShot(sonidoVictoria);
             }
 
             // Seleccionar botón por defecto para la navegación con mando o teclado

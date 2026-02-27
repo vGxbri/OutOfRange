@@ -8,11 +8,12 @@ public class MenuManager : MonoBehaviour
     public GameObject contenedorBotones;
     public GameObject contenedorControles;
     public GameObject contenedorOpciones;
-    public GameObject contenedorNuevaPartida;
+    public GameObject contenedorConfirmarNuevaPartida;
     public GameObject contenedorCreditos;
 
     [Header("Botones del menú principal")]
     public GameObject botonContinuar;
+    public GameObject botonNuevaPartida;
 
     [Header("Transición")]
     public TransitionSettings transicion;
@@ -44,13 +45,18 @@ public class MenuManager : MonoBehaviour
         contenedorBotones.SetActive(true);
         if (contenedorControles != null) contenedorControles.SetActive(false);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
-        if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        if (contenedorConfirmarNuevaPartida != null) contenedorConfirmarNuevaPartida.SetActive(false);
         if (contenedorCreditos != null) contenedorCreditos.SetActive(false); // <-- AÑADIDO
         estadoActual = EstadoMenu.Principal;
 
         if (botonContinuar != null)
         {
             botonContinuar.SetActive(GestorGuardado.HayPartidaGuardada());
+        }
+
+        if (botonNuevaPartida != null)
+        {
+            botonNuevaPartida.SetActive(true);
         }
     }
 
@@ -59,7 +65,7 @@ public class MenuManager : MonoBehaviour
         contenedorBotones.SetActive(false);
         if (contenedorControles != null) contenedorControles.SetActive(true);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
-        if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        if (contenedorConfirmarNuevaPartida != null) contenedorConfirmarNuevaPartida.SetActive(false);
         if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
         estadoActual = EstadoMenu.Controles;
     }
@@ -69,7 +75,7 @@ public class MenuManager : MonoBehaviour
         contenedorBotones.SetActive(false);
         if (contenedorControles != null) contenedorControles.SetActive(false);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(true);
-        if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        if (contenedorConfirmarNuevaPartida != null) contenedorConfirmarNuevaPartida.SetActive(false);
         if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
         estadoActual = EstadoMenu.Opciones;
     }
@@ -79,7 +85,7 @@ public class MenuManager : MonoBehaviour
         contenedorBotones.SetActive(false);
         if (contenedorControles != null) contenedorControles.SetActive(false);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
-        if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        if (contenedorConfirmarNuevaPartida != null) contenedorConfirmarNuevaPartida.SetActive(false);
 
         // Activamos el panel de créditos
         if (contenedorCreditos != null) contenedorCreditos.SetActive(true);
@@ -94,7 +100,7 @@ public class MenuManager : MonoBehaviour
         {
             // Hay partida guardada → preguntar confirmación
             contenedorBotones.SetActive(false);
-            contenedorNuevaPartida.SetActive(true);
+            contenedorConfirmarNuevaPartida.SetActive(true);
             estadoActual = EstadoMenu.ConfirmarNuevaPartida;
         }
         else
@@ -104,7 +110,7 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    // --- BOTONES DEL ContenedorNuevaPartida ---
+    // --- BOTONES DEL ContenedorConfirmarNuevaPartida ---
     public void ConfirmarNuevaPartida()
     {
         // El jugador dijo "Sí" → borrar y empezar
@@ -141,7 +147,7 @@ public class MenuManager : MonoBehaviour
         if (contenedorBotones != null) contenedorBotones.SetActive(false);
         if (contenedorControles != null) contenedorControles.SetActive(false);
         if (contenedorOpciones != null) contenedorOpciones.SetActive(false);
-        if (contenedorNuevaPartida != null) contenedorNuevaPartida.SetActive(false);
+        if (contenedorConfirmarNuevaPartida != null) contenedorConfirmarNuevaPartida.SetActive(false);
         if (contenedorCreditos != null) contenedorCreditos.SetActive(false);
     }
 
