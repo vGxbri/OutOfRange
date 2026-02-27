@@ -11,10 +11,53 @@ public class MetaNivel : MonoBehaviour
     public float delayCarga = 0.5f;
 
     private float tiempoInicio;
+
+    [Header("Efectos Visuales")]
+    public GameObject animacionFondoDisponible; // Asigna el GameObject con la animación aquí
+    private bool animacionActivada = false;
     
     void Start()
     {
         tiempoInicio = Time.time;
+        if (animacionFondoDisponible != null)
+        {
+            animacionFondoDisponible.SetActive(false); // Ocultar al empezar
+        }
+    }
+
+    void Update()
+    {
+        // Comprobar constantemente si los enemigos han muerto para activar la animación de fondo
+        if (!animacionActivada && animacionFondoDisponible != null)
+        {
+            VidaEnemigo[] todosLosEnemigos = FindObjectsOfType<VidaEnemigo>();
+            bool quedanVivos = false;
+
+            foreach (var e in todosLosEnemigos)
+            {
+                if (e != null && !e.EstaMuerto())
+                {
+                    quedanVivos = true;
+                    break; // Cortamos el bucle, ya sabemos que queda al menos uno
+                }
+            }
+
+            if (!quedanVivos && Time.time - tiempoInicio > 1f) // Pequeño margen para asegurarnos de que la escena haya cargado bien
+            {
+                animacionActivada = true;
+                animacionFondoDisponible.SetActive(true); // Mostrar animación en loop
+                
+                // Si la animación no empieza sola, intentamos forzarla habilitando el Animator
+                Animator animatorFondo = animacionFondoDisponible.GetComponent<Animator>();
+                if (animatorFondo != null)
+                {
+                    animatorFondo.enabled = true; // Nos aseguramos de que el Animator esté corriendo
+                    // Si tienes un trigger o nombre de estado específico, podrías ponerlo aquí, ej: animatorFondo.Play("NombreAnimacion");
+                }
+                
+                Debug.Log("Todos los enemigos derrotados: Animación de la meta activada.");
+            }
+        }
     }
 
     // --- METODO MODIFICADO: Ahora se llama cuando un jugador "ataca" la piedra ---
